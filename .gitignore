@@ -16,3 +16,7 @@ yang-gen-sal
 classes
 .DS_STORE
 .metadata
+*.iml
+**/yang/gen
+maven-eclipse.xml
+.checkstyle
