@@ -11,13 +11,13 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GrpcserverProvider {
+public class GrpcServerProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcserverProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcServerProvider.class);
 
     private final DataBroker dataBroker;
 
-    public GrpcserverProvider(final DataBroker dataBroker) {
+    public GrpcServerProvider(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
 
@@ -25,13 +25,13 @@ public class GrpcserverProvider {
      * Method called when the blueprint container is created.
      */
     public void init() {
-        LOG.info("GrpcserverProvider Session Initiated");
+        LOG.info("GrpcServerProvider Session Initiated");
     }
 
     /**
      * Method called when the blueprint container is destroyed.
      */
     public void close() {
-        LOG.info("GrpcserverProvider Closed");
+        LOG.info("GrpcServerProvider Closed");
     }
 }

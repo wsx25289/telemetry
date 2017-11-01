@@ -16,24 +16,21 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </parent>
 
   <groupId>org.opendaylight.telemetry</groupId>
-  <artifactId>telemetry-aggregator</artifactId>
+  <artifactId>core-aggregator</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <name>telemetry</name> <!-- DO NOT CHANGE - Used by Sonar to set project name -->
+  <name>ODL :: telemetry :: ${project.artifactId}</name> <!-- DO NOT CHANGE - Used by Sonar to set project name -->
   <packaging>pom</packaging>
 
   <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/configurator.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/configurator.git</developerConnection>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/core.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/core.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/configurator:Main</url>
+    <url>https://wiki.opendaylight.org/view/core:Main</url>
   </scm>
 
   <modules>
-    <module>grpcserver</module>
-    <module>configurator</module>
-    <module>core</module>
-    <module>features</module>
-    <module>karaf</module>
+    <module>api</module>
+    <module>impl</module>
   </modules>
 
   <!-- DO NOT install or deploy the repo root pom as it's only needed to initiate a build -->
