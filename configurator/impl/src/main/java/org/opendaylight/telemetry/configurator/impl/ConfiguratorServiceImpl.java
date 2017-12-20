@@ -47,26 +47,17 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         }
         List<TelemetrySensorGroup> sensorGroupList = var1.getTelemetrySensorGroup();
         if (null == sensorGroupList || sensorGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "Sensor group is null or empty!"));
+            builder.setConfigureResult(getConfigResult(false, "There is no Sensor group provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         for (TelemetrySensorGroup sensorGroup : sensorGroupList) {
-            if (null == sensorGroup.getTelemetrySensorGroupId()) {
-                builder.setConfigureResult(getConfigResult(false, "Exist sensor group id is null!"));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
             if (null == sensorGroup.getTelemetrySensorPaths() || sensorGroup.getTelemetrySensorPaths().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "The sensor paths of {} is null or empty!" + sensorGroup.getTelemetrySensorGroupId()));
+                builder.setConfigureResult(getConfigResult(false, "The sensor paths of " + sensorGroup.getTelemetrySensorGroupId() + " is null or empty!"));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
-            for (TelemetrySensorPaths sensorPath : sensorGroup.getTelemetrySensorPaths()) {
-                if (null == sensorPath.getTelemetrySensorPath()) {
-                    builder.setConfigureResult(getConfigResult(false, "The sensor path of {} is null!" + sensorGroup.getTelemetrySensorGroupId()));
-                    return RpcResultBuilder.success(builder.build()).buildFuture();
-                }
             }
         }
+
 
         LOG.info("Get sensor group in data store");
         List<TelemetrySensorGroup> allSensorGroupList = dataProcessor.getSensorGroupFromDataStore(IidConstants.TELEMETRY_IID);
@@ -117,19 +108,13 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
         if (null == var1.getTelemetrySensor() || var1.getTelemetrySensor().isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "Sensor group is null or empty!"));
+            builder.setConfigureResult(getConfigResult(false, "There is no sensor group id provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
-        }
-        for (TelemetrySensor sensor : var1.getTelemetrySensor()) {
-            if (null == sensor.getSensorGroupId()) {
-                builder.setConfigureResult(getConfigResult(false, "Exist sensor group id is null!"));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
         }
 
         List<TelemetrySensorGroup> allSensorGroupList = dataProcessor.getSensorGroupFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allSensorGroupList || allSensorGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "No sensor group in data store!"));
+            builder.setConfigureResult(getConfigResult(false, "No sensor group configured!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
@@ -153,25 +138,8 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         }
         List<TelemetryDestinationGroup> destinationGroupList = var1.getTelemetryDestinationGroup();
         if (null == destinationGroupList || destinationGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "Destination group is null or empty!"));
+            builder.setConfigureResult(getConfigResult(false, "There is no destination group provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
-        }
-
-        for (TelemetryDestinationGroup destinationGroup : destinationGroupList) {
-            if (null == destinationGroup.getDestinationGroupId()) {
-                builder.setConfigureResult(getConfigResult(false, "Exist destination group id is null!"));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
-            if (null == destinationGroup.getDestinationProfile() || destinationGroup.getDestinationProfile().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "The destination profile of {} is null or empty!" + destinationGroup.getDestinationGroupId()));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
-            for (DestinationProfile destinationProfile : destinationGroup.getDestinationProfile()) {
-                if (null == destinationProfile.getDestinationAddress() || null == destinationProfile.getDestinationPort()) {
-                    builder.setConfigureResult(getConfigResult(false, "The adress or port of destination profile {} is null!" + destinationGroup.getDestinationGroupId()));
-                    return RpcResultBuilder.success(builder.build()).buildFuture();
-                }
-            }
         }
 
         LOG.info("Get destination group in data store");
@@ -224,19 +192,13 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
         if (null == var1.getTelemetryDestination() || var1.getTelemetryDestination().isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "Destination group is null or empty!"));
+            builder.setConfigureResult(getConfigResult(false, "There is no destination group id provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
-        }
-        for (TelemetryDestination telDst : var1.getTelemetryDestination()) {
-            if (null == telDst.getDestinationGroupId()) {
-                builder.setConfigureResult(getConfigResult(false, "Exist destination group id is null!"));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
         }
 
         List<TelemetryDestinationGroup> allDestinationGroupList = dataProcessor.getDestinationGroupFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allDestinationGroupList || allDestinationGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "No destination group in data store!"));
+            builder.setConfigureResult(getConfigResult(false, "No destination group configured!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 

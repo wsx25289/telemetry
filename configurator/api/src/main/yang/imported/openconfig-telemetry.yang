@@ -651,7 +651,8 @@ module openconfig-telemetry {
     description
       "Configuration parameters for the stream destinations";
       leaf destination-address {
-        type oc-inet:ip-address;
+      //choose ipv4
+        type oc-inet:ipv4-address;
         description
           "IP address of the telemetry stream destination";
       }
