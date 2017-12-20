@@ -23,15 +23,15 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <argument ref="mountService" />
   </bean>
 
-  <bean id="dataStoreProcessor"
-        class="org.opendaylight.telemetry.configurator.impl.DataStoreProcessor">
+  <bean id="dataProcessor"
+        class="org.opendaylight.telemetry.configurator.impl.DataProcessor">
     <argument ref="dataBroker" />
   </bean>
 
   <bean id="configuratorServiceImpl"
         class="org.opendaylight.telemetry.configurator.impl.ConfiguratorServiceImpl">
     <argument ref="configurationWriter" />
-    <argument ref="dataStoreProcessor" />
+    <argument ref="dataProcessor" />
   </bean>
   <odl:rpc-implementation ref="configuratorServiceImpl" />
 

@@ -7,8 +7,13 @@
  */
 package org.opendaylight.telemetry.configurator.impl;
 
+import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.sensor.specification.TelemetrySensorGroup;
+import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.sensor.specification.TelemetrySensorGroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.md.sal.common.rev131028.rpc.routing.table.Routes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.Telemetry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.destination.specification.TelemetryDestinationGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.destination.specification.TelemetryDestinationGroupKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -22,4 +27,17 @@ public class IidConstants {
                     new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
     public static final InstanceIdentifier<Routes> ROUTES_IID = InstanceIdentifier.create(Routes.class);
+
+    public static final InstanceIdentifier<Telemetry> TELEMETRY_IID = InstanceIdentifier
+            .create(Telemetry.class);
+
+    public static final InstanceIdentifier<TelemetrySensorGroup> getSensorGroupPath(String sensorGroupId) {
+        return InstanceIdentifier.create(Telemetry.class)
+                .child(TelemetrySensorGroup.class, new TelemetrySensorGroupKey(sensorGroupId));
+    }
+
+    public static final InstanceIdentifier<TelemetryDestinationGroup> getDestinationGroupPath(String destinationGroupId) {
+        return InstanceIdentifier.create(Telemetry.class)
+                .child(TelemetryDestinationGroup.class, new TelemetryDestinationGroupKey(destinationGroupId));
+    }
 }

@@ -1,0 +1,70 @@
+module telemetry-configurator {
+    yang-version 1.1;
+    namespace "urn:opendaylight:telemetry:params:xml:ns:yang:configurator";
+    prefix "telemetry-cfg";
+
+    import openconfig-telemetry { prefix oc-telemetry; }
+
+    revision "2017-11-20" {
+        description "Initial revision of configurator model";
+    }
+
+    grouping telemetry-destination-group {
+       leaf destination-group-id {
+          type string;
+       }
+    }
+
+    grouping telemetry-destination-specification {
+       list telemetry-destination-group {
+          key "destination-group-id";
+          uses telemetry-destination-group;
+
+          list destination-profile {
+             key "destination-address destination-port";
+             uses oc-telemetry:telemetry-stream-destination-config;
+          }
+       }
+    }
+
+    grouping node-identity {
+       leaf node-id {
+          type string;
+       }
+    }
+
+    grouping telemetry-subscription-specification {
+       list telemetry-subscription {
+          key "subscription-name";
+          uses oc-telemetry:telemetry-subscription-name-config;
+          uses oc-telemetry:telemetry-local-source-address-config;
+          uses oc-telemetry:telemetry-qos-marking-config;
+          uses oc-telemetry:telemetry-stream-protocol-config;
+          uses oc-telemetry:telemetry-stream-encoding-config;
+
+          list telemetry-sensor {
+             key "sensor-group-id";
+             uses oc-telemetry:telemetry-sensor-group-config;
+             uses oc-telemetry:telemetry-stream-subscription-config;
+          }
+
+          list telemetry-destination {
+             key "destination-group-id";
+             leaf destination-group-id {
+                type string;
+             }
+          }
+       }
+    }
+
+    container telemetry {
+       list node-subscription {
+          key "node-id";
+          uses node-identity;
+          uses telemetry-subscription-specification;
+       }
+
+       uses oc-telemetry:telemetry-sensor-specification;
+       uses telemetry-destination-specification;
+    }
+}
