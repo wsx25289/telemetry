@@ -58,7 +58,7 @@ module telemetry-configurator {
     }
 
     grouping telemetry-node-subscription {
-       list telemetry-node-group {
+       list telemetry-node {
           key "node-id";
           uses node-identity;
           uses telemetry-subscription-specification;

@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.configure.result.ConfigureResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.destination.specification.TelemetryDestinationGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.destination.specification.telemetry.destination.group.DestinationProfile;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.node.subscription.TelemetryNodeGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.node.subscription.TelemetryNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.TelemetrySubscription;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.telemetry.subscription.TelemetryDestination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.telemetry.subscription.TelemetrySensor;
@@ -77,7 +77,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
                 }
             }
             if (existFlag) {
-                builder.setConfigureResult(getConfigResult(false, "Sensor group is exist!"));
+                builder.setConfigureResult(getConfigResult(false, "Sensor group " + sensorGroup.getTelemetrySensorGroupId() + " is exist!"));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
             }
         }
@@ -166,7 +166,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
                 }
             }
             if (existFlag) {
-                builder.setConfigureResult(getConfigResult(false, "Destination group is exist!"));
+                builder.setConfigureResult(getConfigResult(false, "Destination group " + destinationGroup.getDestinationGroupId() + " is exist!"));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
             }
         }
@@ -223,13 +223,13 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        List<TelemetryNodeGroup> nodeGroupList = var1.getTelemetryNodeGroup();
+        List<TelemetryNode> nodeGroupList = var1.getTelemetryNode();
         if (null == nodeGroupList || nodeGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no node group provided by input!"));
+            builder.setConfigureResult(getConfigResult(false, "There is no node provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        for (TelemetryNodeGroup telemetryNodeGroup : nodeGroupList) {
+        for (TelemetryNode telemetryNodeGroup : nodeGroupList) {
             if (null == telemetryNodeGroup.getTelemetrySubscription() || telemetryNodeGroup.getTelemetrySubscription().isEmpty()) {
                 builder.setConfigureResult(getConfigResult(false, "The subscription  of " + telemetryNodeGroup.getNodeId() + " is null or empty!"));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
@@ -276,7 +276,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
 //        LOG.info("Get node subscription in data store");
 //        List<TelemetryNodeGroup> allnodeGroupList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
 
-        dataProcessor.addNodeSubscriptionToDataStore(var1.getTelemetryNodeGroup());
+        dataProcessor.addNodeSubscriptionToDataStore(var1.getTelemetryNode());
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
@@ -287,12 +287,12 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             return rpcErr("Input is null!");
         }
 
-        List<TelemetryNodeGroup> allNodeSubscriptionList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
+        List<TelemetryNode> allNodeSubscriptionList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allNodeSubscriptionList || allNodeSubscriptionList.isEmpty()) {
             return rpcErr("No node subscription configured");
         }
         QueryTelemetrySubscriptionOutputBuilder builder = new QueryTelemetrySubscriptionOutputBuilder();
-        builder.setTelemetryNodeGroup(allNodeSubscriptionList);
+        builder.setTelemetryNode(allNodeSubscriptionList);
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
@@ -308,7 +308,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             builder.setConfigureResult(getConfigResult(false, "There is no node id provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
-        List<TelemetryNodeGroup> allNodeSubscriptionList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
+        List<TelemetryNode> allNodeSubscriptionList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allNodeSubscriptionList || allNodeSubscriptionList.isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "No node subscription configured!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();

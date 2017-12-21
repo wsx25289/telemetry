@@ -745,7 +745,7 @@ module openconfig-telemetry {
        messages";
     // TODO: Make this a reference to an interface.
     leaf local-source-address {
-      type oc-inet:ip-address;
+      type oc-inet:ipv4-address;
       description
         "The IP address which will be the source of packets from
          the device to a telemetry collector destination.";
