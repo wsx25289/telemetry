@@ -18,8 +18,10 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.sensor.specification.TelemetrySensorGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.telemetry.destination.input.TelemetryDestination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.telemetry.sensor.input.TelemetrySensor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.telemetry.subscription.input.TelemetryNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.Telemetry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.destination.specification.TelemetryDestinationGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.node.subscription.TelemetryNodeGroup;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -71,6 +73,22 @@ public class DataProcessor {
         return null;
     }
 
+    public List<TelemetryNodeGroup> getNodeSubscriptionFromDataStore(InstanceIdentifier<Telemetry> path) {
+        final ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction();
+        Optional<Telemetry> telemetry = null;
+        try {
+            telemetry = readTransaction.read(LogicalDatastoreType.CONFIGURATION, path).checkedGet();
+            if (telemetry.isPresent()) {
+                LOG.info("Telemetry data from controller data store is not null");
+                return telemetry.get().getTelemetryNodeGroup();
+            }
+        } catch (ReadFailedException e) {
+            LOG.warn("Failed to read {} ", path, e);
+        }
+        LOG.info("Telemetry data from controller data store is null");
+        return null;
+    }
+
     public void addSensorGroupToDataStore(List<TelemetrySensorGroup> sensorGroupList) {
         for (TelemetrySensorGroup sensorGroup : sensorGroupList) {
             operateDataStore(ConfigurationType.ADD, sensorGroup, IidConstants.getSensorGroupPath(sensorGroup.getTelemetrySensorGroupId()));
@@ -80,6 +98,12 @@ public class DataProcessor {
     public void addDestinationGroupToDataStore(List<TelemetryDestinationGroup> destinationGroupList) {
         for (TelemetryDestinationGroup destinationGroup : destinationGroupList) {
             operateDataStore(ConfigurationType.ADD, destinationGroup, IidConstants.getDestinationGroupPath(destinationGroup.getDestinationGroupId()));
+        }
+    }
+
+    public void addNodeSubscriptionToDataStore(List<TelemetryNodeGroup> nodeGroupList) {
+        for (TelemetryNodeGroup nodeGroup : nodeGroupList) {
+            operateDataStore(ConfigurationType.MODIFY, nodeGroup, IidConstants.getNodeGroupPath(nodeGroup.getNodeId()));
         }
     }
 
@@ -130,6 +154,16 @@ public class DataProcessor {
             for (TelemetryDestinationGroup telemetryDestinationGroup : destinationGroupList) {
                 if (telemetryDestination.getDestinationGroupId().equals(telemetryDestinationGroup.getDestinationGroupId())) {
                     operateDataStore(ConfigurationType.DELETE, null, IidConstants.getDestinationGroupPath(telemetryDestinationGroup.getDestinationGroupId()));
+                }
+            }
+        }
+    }
+
+    public void deleteNodeSubscriptionFromDataStore(List<TelemetryNode> nodeList, List<TelemetryNodeGroup> nodeGroupList) {
+        for (TelemetryNode telemetryNode : nodeList) {
+            for (TelemetryNodeGroup telemetryNodeGroup : nodeGroupList) {
+                if (telemetryNode.getNodeId().equals(telemetryNodeGroup.getNodeId())) {
+                    operateDataStore(ConfigurationType.DELETE, null, IidConstants.getNodeGroupPath(telemetryNodeGroup.getNodeId()));
                 }
             }
         }

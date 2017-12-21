@@ -98,11 +98,7 @@ module telemetry-configurator-api {
 
     rpc configure-telemetry-subscription {
         input {
-           list node {
-              key "node-id";
-              uses telemetry-cfg:node-identity;
-              uses telemetry-cfg:telemetry-subscription-specification;
-           }
+           uses telemetry-cfg:telemetry-node-subscription;
         }
 
         output {
@@ -112,34 +108,28 @@ module telemetry-configurator-api {
 
     rpc query-telemetry-subscription {
         input {
-           list node {
+           //list telemetry-node {
+              //key "node-id";
+              //uses telemetry-cfg:node-identity;
+           //}
+        }
+
+        output {
+           uses telemetry-cfg:telemetry-node-subscription;
+        }
+    }
+
+    rpc delete-telemetry-subscription {
+        input {
+           list telemetry-node {
               key "node-id";
               uses telemetry-cfg:node-identity;
            }
         }
 
         output {
-           list node {
-              key "node-id";
-              uses telemetry-cfg:node-identity;
-              uses telemetry-cfg:telemetry-subscription-specification;
-           }
+           uses configure-result;
         }
     }
-
-    //rpc delete-telemetry-subscription {
-        //input {
-           //list node {
-              //key "node-id";
-              //uses telemetry-cfg:node-identity;
-           //}
-        //}
-
-        //output {
-           //leaf configure-result {
-              //type string;
-           //}
-        //}
-    //}
 
 }

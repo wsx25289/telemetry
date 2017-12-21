@@ -57,14 +57,17 @@ module telemetry-configurator {
        }
     }
 
-    container telemetry {
-       list node-subscription {
+    grouping telemetry-node-subscription {
+       list telemetry-node-group {
           key "node-id";
           uses node-identity;
           uses telemetry-subscription-specification;
        }
+    }
 
+    container telemetry {
        uses oc-telemetry:telemetry-sensor-specification;
        uses telemetry-destination-specification;
+       uses telemetry-node-subscription;
     }
 }
