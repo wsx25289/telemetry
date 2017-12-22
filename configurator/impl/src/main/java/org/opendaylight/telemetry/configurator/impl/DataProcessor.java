@@ -102,7 +102,7 @@ public class DataProcessor {
 
     public void addNodeSubscriptionToDataStore(List<TelemetryNode> nodeGroupList) {
         for (TelemetryNode nodeGroup : nodeGroupList) {
-            operateDataStore(ConfigurationType.MODIFY, nodeGroup, IidConstants.getNodeGroupPath(nodeGroup.getNodeId()));
+            operateDataStore(ConfigurationType.ADD, nodeGroup, IidConstants.getNodeGroupPath(nodeGroup.getNodeId()));
         }
     }
 
@@ -159,10 +159,10 @@ public class DataProcessor {
     }
 
     public void deleteNodeSubscriptionFromDataStore(List<org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params
-            .xml.ns.yang.configurator.api.rev171120.delete.telemetry.subscription.input.TelemetryNode> nodeList,
+            .xml.ns.yang.configurator.api.rev171120.delete.node.telemetry.subscription.input.TelemetryNode> nodeList,
                                                     List<TelemetryNode> nodeGroupList) {
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120
-                .delete.telemetry.subscription.input.TelemetryNode telemetryNode : nodeList) {
+                .delete.node.telemetry.subscription.input.TelemetryNode telemetryNode : nodeList) {
             for (TelemetryNode telemetryNodeGroup : nodeGroupList) {
                 if (telemetryNode.getNodeId().equals(telemetryNodeGroup.getNodeId())) {
                     operateDataStore(ConfigurationType.DELETE, null, IidConstants.getNodeGroupPath(telemetryNodeGroup.getNodeId()));

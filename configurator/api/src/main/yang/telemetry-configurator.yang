@@ -37,10 +37,17 @@ module telemetry-configurator {
        list telemetry-subscription {
           key "subscription-name";
           uses oc-telemetry:telemetry-subscription-name-config;
+          leaf protocol-type {
+             type string;
+          }
+          leaf encoding-type {
+             type string;
+          }
           uses oc-telemetry:telemetry-local-source-address-config;
           uses oc-telemetry:telemetry-qos-marking-config;
-          uses oc-telemetry:telemetry-stream-protocol-config;
-          uses oc-telemetry:telemetry-stream-encoding-config;
+
+          //uses oc-telemetry:telemetry-stream-protocol-config;
+          //uses oc-telemetry:telemetry-stream-encoding-config;
 
           list telemetry-sensor {
              key "sensor-group-id";

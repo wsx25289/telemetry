@@ -215,9 +215,9 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<ConfigureTelemetrySubscriptionOutput>> configureTelemetrySubscription(ConfigureTelemetrySubscriptionInput var1) {
+    public Future<RpcResult<ConfigureNodeTelemetrySubscriptionOutput>> configureNodeTelemetrySubscription(ConfigureNodeTelemetrySubscriptionInput var1) {
         //check input
-        ConfigureTelemetrySubscriptionOutputBuilder builder = new ConfigureTelemetrySubscriptionOutputBuilder();
+        ConfigureNodeTelemetrySubscriptionOutputBuilder builder = new ConfigureNodeTelemetrySubscriptionOutputBuilder();
         if (null == var1) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
@@ -231,7 +231,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
 
         for (TelemetryNode telemetryNodeGroup : nodeGroupList) {
             if (null == telemetryNodeGroup.getTelemetrySubscription() || telemetryNodeGroup.getTelemetrySubscription().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "The subscription  of " + telemetryNodeGroup.getNodeId() + " is null or empty!"));
+                builder.setConfigureResult(getConfigResult(false, "The subscription of " + telemetryNodeGroup.getNodeId() + " is null or empty!"));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
             }
 
@@ -281,7 +281,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<QueryTelemetrySubscriptionOutput>> queryTelemetrySubscription(QueryTelemetrySubscriptionInput var1) {
+    public Future<RpcResult<QueryNodeTelemetrySubscriptionOutput>> queryNodeTelemetrySubscription(QueryNodeTelemetrySubscriptionInput var1) {
         //check input
         if (null == var1) {
             return rpcErr("Input is null!");
@@ -291,14 +291,14 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         if (null == allNodeSubscriptionList || allNodeSubscriptionList.isEmpty()) {
             return rpcErr("No node subscription configured");
         }
-        QueryTelemetrySubscriptionOutputBuilder builder = new QueryTelemetrySubscriptionOutputBuilder();
+        QueryNodeTelemetrySubscriptionOutputBuilder builder = new QueryNodeTelemetrySubscriptionOutputBuilder();
         builder.setTelemetryNode(allNodeSubscriptionList);
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<DeleteTelemetrySubscriptionOutput>> deleteTelemetrySubscription(DeleteTelemetrySubscriptionInput var1) {
+    public Future<RpcResult<DeleteNodeTelemetrySubscriptionOutput>> deleteNodeTelemetrySubscription(DeleteNodeTelemetrySubscriptionInput var1) {
         //check input
-        DeleteTelemetrySubscriptionOutputBuilder builder = new DeleteTelemetrySubscriptionOutputBuilder();
+        DeleteNodeTelemetrySubscriptionOutputBuilder builder = new DeleteNodeTelemetrySubscriptionOutputBuilder();
         if (null == var1) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
@@ -336,7 +336,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
 
     private boolean checkParamsInSubscriptionExist(TelemetrySubscription subscription) {
         if (null == subscription.getLocalSourceAddress() || null == subscription.getOriginatedQosMarking()
-                || null == subscription.getProtocol() || null == subscription.getEncoding()) {
+                || null == subscription.getProtocolType() || null == subscription.getEncodingType()) {
             return false;
         }
         return true;
