@@ -9,6 +9,7 @@ package org.opendaylight.telemetry.configurator.impl;
 
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.sensor.specification.TelemetrySensorGroup;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.sensor.specification.TelemetrySensorGroupKey;
+import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.TelemetrySystem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.md.sal.common.rev131028.rpc.routing.table.Routes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.Telemetry;
@@ -28,7 +29,7 @@ public class IidConstants {
             .create(NetworkTopology.class).child(Topology.class,
                     new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
-    public static final InstanceIdentifier<Routes> ROUTES_IID = InstanceIdentifier.create(Routes.class);
+    public static final InstanceIdentifier<TelemetrySystem> TELEMETRY_SYSTEM_IID = InstanceIdentifier.create(TelemetrySystem.class);
 
     public static final InstanceIdentifier<Telemetry> TELEMETRY_IID = InstanceIdentifier
             .create(Telemetry.class);

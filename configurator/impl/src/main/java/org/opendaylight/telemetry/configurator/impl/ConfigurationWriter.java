@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.TelemetrySystem;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
@@ -55,12 +56,12 @@ public class ConfigurationWriter {
     }
 
     public CheckedFuture<Void, TransactionCommitFailedException> writeTelemetryConfig(
-            ConfigurationType type, String nodeId, String config) {
+            ConfigurationType type, String nodeId, TelemetrySystem data) {
         if (type == ConfigurationType.DELETE) {
-            return write(OperateType.DELETE, nodeId, IidConstants.ROUTES_IID, null);
+            return write(OperateType.DELETE, nodeId, null, data);
         }
 
-        return write(OperateType.REPLACE, nodeId, IidConstants.ROUTES_IID, null);
+        return write(OperateType.REPLACE, nodeId, IidConstants.TELEMETRY_SYSTEM_IID, data);
     }
 
     private <T extends DataObject> CheckedFuture<Void, TransactionCommitFailedException> write(
