@@ -335,8 +335,8 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     }
 
     private boolean checkParamsInSubscriptionExist(TelemetrySubscription subscription) {
-        if (null == subscription.getLocalSourceAddress() || null == subscription.getOriginatedQosMarking()
-                || null == subscription.getProtocolType() || null == subscription.getEncodingType()) {
+        if (null == subscription.getLocalSourceAddress() || null == subscription.getProtocolType()
+                || null == subscription.getEncodingType()) {
             return false;
         }
         return true;
