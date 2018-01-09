@@ -8,6 +8,8 @@
 package org.opendaylight.telemetry.core.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.telemetry.core.api.TelemetryNotification;
+import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +27,17 @@ public class CoreProvider {
      * Method called when the blueprint container is created.
      */
     public void init() {
-        LOG.info("CoreProvider Session Initiated");
+        LOG.info("test Start");
+//        TelemetryNotification telemetryNotification = new TelemetryNotificationImpl();
+//        TelemetryPacketHandler handler = new TelemetryPacketHandlerImpl();
+//        telemetryNotification.subscribe(handler);
+//        telemetryNotification.publish("Testtttttttttttttttttttttttttttttt");
     }
 
     /**
      * Method called when the blueprint container is destroyed.
      */
     public void close() {
-        LOG.info("CoreProvider Closed");
+        LOG.info("test Closed");
     }
 }

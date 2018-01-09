@@ -8,7 +8,7 @@
 package org.opendaylight.telemetry.core.impl;
 
 import com.lmax.disruptor.EventFactory;
-import org.opendaylight.telemetry.test.api.TelemetryPacketHandler;
+import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
 
 import java.util.Collection;
 

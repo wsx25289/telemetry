@@ -32,7 +32,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>grpcserver</module>
     <module>configurator</module>
     <module>core</module>
+    <!--
     <module>test</module>
+    -->
     <module>features</module>
     <module>karaf</module>
   </modules>

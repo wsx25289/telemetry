@@ -40,7 +40,7 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
-        <!-- for test -->
+        <!-- for test
         <dependency>
             <groupId>org.opendaylight.telemetry</groupId>
             <artifactId>odl-telemetry-test</artifactId>
@@ -48,6 +48,7 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
+        -->
     </dependencies>
 
 </project>

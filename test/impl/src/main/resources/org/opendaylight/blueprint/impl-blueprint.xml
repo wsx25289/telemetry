@@ -10,18 +10,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
   xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
   odl:use-default-for-reference-types="true">
-
+<!--
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
-
-  <reference id="telemetryNotification"
+-->
+  <reference id="notificationImpl"
              interface="org.opendaylight.telemetry.core.api.TelemetryNotification"/>
 
   <bean id="test"
         class="org.opendaylight.telemetry.test.impl.TestClass"
         init-method="init" destroy-method="close">
-    <argument ref="telemetryNotification"/>
+    <argument ref="notificationImpl"/>
   </bean>
 
   <bean id="telemetryPacketHandlerImpl"

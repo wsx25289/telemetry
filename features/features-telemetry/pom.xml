@@ -55,7 +55,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <type>xml</type>
       <classifier>features</classifier>
     </dependency>
-    <!-- for test -->
+    <!-- for test
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>odl-telemetry-test</artifactId>
@@ -63,6 +63,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <type>xml</type>
       <classifier>features</classifier>
     </dependency>
+    -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>odl-telemetry-all</artifactId>

@@ -5,12 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.telemetry.core.api;
+package org.opendaylight.telemetry.core.impl;
 
-public interface TelemetryNotification {
+import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
 
-    void subscribe(TelemetryPacketHandler handler);
+public class TelemetryPacketHandlerImpl implements TelemetryPacketHandler {
 
-    <T> void publish(T data);
-
+    @Override
+    public <T> void process(T data) {
+        System.out.print("Process data is: " + data);
+    }
 }

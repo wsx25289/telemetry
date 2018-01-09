@@ -16,7 +16,7 @@ import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.opendaylight.telemetry.core.api.TelemetryNotification;
-import org.opendaylight.telemetry.test.api.TelemetryPacketHandler;
+import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

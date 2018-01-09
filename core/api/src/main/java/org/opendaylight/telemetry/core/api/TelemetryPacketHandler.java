@@ -7,10 +7,6 @@
  */
 package org.opendaylight.telemetry.core.api;
 
-public interface TelemetryNotification {
-
-    void subscribe(TelemetryPacketHandler handler);
-
-    <T> void publish(T data);
-
+public interface TelemetryPacketHandler {
+    <T> void process(T data);
 }
