@@ -5,19 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.telemetry.configurator.impl;
+package org.opendaylight.telemetry.core.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConfiguratorProvider {
+public class CoreProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ConfiguratorProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CoreProvider.class);
 
     private final DataBroker dataBroker;
 
-    public ConfiguratorProvider(final DataBroker dataBroker) {
+    public CoreProvider(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
 
@@ -25,13 +25,13 @@ public class ConfiguratorProvider {
      * Method called when the blueprint container is created.
      */
     public void init() {
-        LOG.info("ConfiguratorProvider Session Initiated");
+        LOG.info("CoreProvider Session Initiated");
     }
 
     /**
      * Method called when the blueprint container is destroyed.
      */
     public void close() {
-        LOG.info("ConfiguratorProvider Closed");
+        LOG.info("CoreProvider Closed");
     }
 }

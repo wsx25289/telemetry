@@ -41,12 +41,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <argument ref="configurationWriter" />
     <argument ref="dataProcessor" />
   </bean>
-  <odl:rpc-implementation ref="configuratorServiceImpl" />
 
-  <bean id="provider"
-    class="org.opendaylight.telemetry.configurator.impl.ConfiguratorProvider"
-    init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
-  </bean>
+  <odl:rpc-implementation ref="configuratorServiceImpl" />
 
 </blueprint>

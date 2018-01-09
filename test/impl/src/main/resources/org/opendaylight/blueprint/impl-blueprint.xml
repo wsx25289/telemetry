@@ -15,16 +15,19 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
 
-  <bean id="notificationImpl"
-        class="org.opendaylight.telemetry.core.impl.TelemetryNotificationImpl">
+  <reference id="telemetryNotification"
+             interface="org.opendaylight.telemetry.core.api.TelemetryNotification"/>
+
+  <bean id="test"
+        class="org.opendaylight.telemetry.test.impl.TestClass"
+        init-method="init" destroy-method="close">
+    <argument ref="telemetryNotification"/>
   </bean>
 
-  <service ref="notificationImpl" interface="org.opendaylight.telemetry.core.api.TelemetryNotification"/>
-
-  <bean id="provider"
-    class="org.opendaylight.telemetry.core.impl.CoreProvider"
-    init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
+  <bean id="telemetryPacketHandlerImpl"
+        class="org.opendaylight.telemetry.test.impl.TelemetryPacketHandlerImpl">
   </bean>
+
+  <service ref="telemetryPacketHandlerImpl" interface="org.opendaylight.telemetry.test.api.TelemetryPacketHandler"/>
 
 </blueprint>
