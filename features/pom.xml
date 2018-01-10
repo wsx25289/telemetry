@@ -28,8 +28,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>odl-telemetry-configurator</module>
     <module>odl-telemetry-core</module>
     <!-- for test
-    <module>odl-telemetry-test</module>
-    -->
+<module>odl-telemetry-test</module>
+-->
     <module>odl-telemetry-all</module>
     <module>features-telemetry</module>
   </modules>

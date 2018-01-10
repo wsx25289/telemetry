@@ -18,9 +18,14 @@ public class CoreProvider {
     private static final Logger LOG = LoggerFactory.getLogger(CoreProvider.class);
 
     private final DataBroker dataBroker;
+    private TelemetryNotification telemetryNotification;
+    private TelemetryPacketHandler handler;
 
-    public CoreProvider(final DataBroker dataBroker) {
+    public CoreProvider(final DataBroker dataBroker, TelemetryNotificationImpl telemetryNotification,
+                        TelemetryPacketHandlerImpl telemetryPacketHandler) {
         this.dataBroker = dataBroker;
+        this.telemetryNotification = telemetryNotification;
+        this.handler = telemetryPacketHandler;
     }
 
     /**
@@ -30,8 +35,8 @@ public class CoreProvider {
         LOG.info("test Start");
 //        TelemetryNotification telemetryNotification = new TelemetryNotificationImpl();
 //        TelemetryPacketHandler handler = new TelemetryPacketHandlerImpl();
-//        telemetryNotification.subscribe(handler);
-//        telemetryNotification.publish("Testtttttttttttttttttttttttttttttt");
+        telemetryNotification.subscribe(handler);
+        telemetryNotification.publish("Testtttttttttttttttttttttttttttttt");
     }
 
     /**

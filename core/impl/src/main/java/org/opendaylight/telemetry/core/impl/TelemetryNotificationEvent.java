@@ -24,11 +24,11 @@ public class TelemetryNotificationEvent<T> {
     }
 
     public void deliverNotification() {
-//        for (TelemetryPacketHandler r : subscribers) {
-//            if (null != r) {
-//                r.process(data);
-//            }
-//        }
-        System.out.print("Data is: " + data);
+        for (TelemetryPacketHandler r : subscribers) {
+            if (null != r) {
+                r.process(data);
+            }
+        }
+        //System.out.print("Data is: " + data);
     }
 }

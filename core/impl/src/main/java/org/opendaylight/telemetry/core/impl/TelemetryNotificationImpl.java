@@ -7,6 +7,7 @@
  */
 package org.opendaylight.telemetry.core.impl;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.lmax.disruptor.EventHandler;
@@ -37,7 +38,7 @@ public class TelemetryNotificationImpl implements TelemetryNotification {
             .withLock(1L, 30L, TimeUnit.MILLISECONDS);
     private static final EventHandler<TelemetryNotificationEvent> DISPATCH_NOTIFICATIONS =
             (event, sequence, endOfBatch) -> event.deliverNotification();
-    private volatile Multimap<String, TelemetryPacketHandler> listeners = ImmutableMultimap.of();
+    private volatile Multimap<String, TelemetryPacketHandler> listeners = ArrayListMultimap.create();
 
     public TelemetryNotificationImpl() {
         initDisruptor();

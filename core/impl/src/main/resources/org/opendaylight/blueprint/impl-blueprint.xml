@@ -31,6 +31,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     class="org.opendaylight.telemetry.core.impl.CoreProvider"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
+    <argument ref="notificationImpl" />
+    <argument ref="telemetryPacketHandlerImpl" />
   </bean>
 
 </blueprint>
