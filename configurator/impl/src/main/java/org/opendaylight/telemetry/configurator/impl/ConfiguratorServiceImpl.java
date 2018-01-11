@@ -335,8 +335,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     }
 
     private boolean checkParamsInSubscriptionExist(TelemetrySubscription subscription) {
-        if (null == subscription.getLocalSourceAddress() || null == subscription.getProtocolType()
-                || null == subscription.getEncodingType()) {
+        if (null == subscription.getLocalSourceAddress()) {
             return false;
         }
         return true;
@@ -356,7 +355,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     }
 
     private boolean checkParamsInSensorExist(TelemetrySensor sensor) {
-        if (null == sensor.getHeartbeatInterval() || null == sensor.getSampleInterval()) {
+        if (null == sensor.getSampleInterval()) {
             return false;
         }
         return true;

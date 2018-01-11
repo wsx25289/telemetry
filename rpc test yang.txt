@@ -118,7 +118,7 @@ input: {
                                                                                   sample-interval:100,
                                                                                   heartbeat-interval:60,
                                                                                   suppress-redundant:false
-                                                                             }]
+                                                                             }],
                                                             telemetry-destination:[{
                                                                                       destination-group-id:destination1
                                                                                   },

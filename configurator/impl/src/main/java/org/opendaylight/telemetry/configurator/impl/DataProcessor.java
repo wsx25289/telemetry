@@ -401,22 +401,22 @@ public class DataProcessor {
 
         if (protocolType.equals("STREAM_SSH")) {
             builder.setProtocol(STREAMSSH.class);
-        } else if (protocolType.equals("STREAM_GRPC")) {
-            builder.setProtocol(STREAMGRPC.class);
+        } else if (protocolType.equals("STREAM_WEBSOCKET_RPC")) {
+            builder.setProtocol(STREAMWEBSOCKETRPC.class);
         } else if (protocolType.equals("STREAM_JSON_RPC")) {
             builder.setProtocol(STREAMJSONRPC.class);
         } else if (protocolType.equals("STREAM_THRIFT_RPC")) {
             builder.setProtocol(STREAMTHRIFTRPC.class);
         } else {
-            builder.setProtocol(STREAMWEBSOCKETRPC.class);
+            builder.setProtocol(STREAMGRPC.class);
         }
 
         if (encodingtype.equals("ENC_XML")) {
             builder.setEncoding(ENCXML.class);
-        } else if (encodingtype.equals("ENC_PROTO3")) {
-            builder.setEncoding(ENCPROTO3.class);
-        } else {
+        } else if (encodingtype.equals("ENC_JSON_IETF")) {
             builder.setEncoding(ENCJSONIETF.class);
+        } else {
+            builder.setEncoding(ENCPROTO3.class);
         }
         return builder.build();
     }
