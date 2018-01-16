@@ -44,9 +44,12 @@ import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.SubscriptionBuilder;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.SubscriptionKey;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.subscription.*;
+import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.subscription.Config;
+//import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.subscription.ConfigBuilder;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.subscription.sensor.profiles.SensorProfile;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.subscription.sensor.profiles.SensorProfileBuilder;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.subscription.sensor.profiles.SensorProfileKey;
+import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system.subscriptions.persistent.subscription.sensor.profiles.sensor.profile.*;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.types.rev170824.*;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.types.inet.rev170824.Dscp;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.types.inet.rev170824.Ipv4Address;
@@ -62,6 +65,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -330,8 +334,8 @@ public class DataProcessor {
             SensorPathBuilder sensorPathBuilder = new SensorPathBuilder();
             sensorPathBuilder.setKey(new SensorPathKey(paths.getTelemetrySensorPath()));
             sensorPathBuilder.setPath(paths.getTelemetrySensorPath());
-            sensorPathBuilder.setConfig(new ConfigBuilder().setPath(paths.getTelemetrySensorPath())
-                    .setExcludeFilter(paths.getSensorExcludeFilter()).build());
+//            sensorPathBuilder.setConfig(new ConfigBuilder().setPath(paths.getTelemetrySensorPath())
+//                    .setExcludeFilter(paths.getSensorExcludeFilter()).build());
             sensorPathList.add(sensorPathBuilder.build());
         }
         SensorPathsBuilder builder = new SensorPathsBuilder();
@@ -397,27 +401,35 @@ public class DataProcessor {
                 .persistent.subscription.ConfigBuilder();
         builder.setSubscriptionName(name);
         builder.setLocalSourceAddress(address);
+        if (null == qos) {
+            builder.setOriginatedQosMarking(null);
+        }
         builder.setOriginatedQosMarking(qos);
 
-        if (protocolType.equals("STREAM_SSH")) {
-            builder.setProtocol(STREAMSSH.class);
-        } else if (protocolType.equals("STREAM_WEBSOCKET_RPC")) {
-            builder.setProtocol(STREAMWEBSOCKETRPC.class);
-        } else if (protocolType.equals("STREAM_JSON_RPC")) {
-            builder.setProtocol(STREAMJSONRPC.class);
-        } else if (protocolType.equals("STREAM_THRIFT_RPC")) {
-            builder.setProtocol(STREAMTHRIFTRPC.class);
-        } else {
+        if (null == protocolType) {
             builder.setProtocol(STREAMGRPC.class);
+        } else {
+            if (protocolType.equals("STREAM_SSH")) {
+                builder.setProtocol(STREAMSSH.class);
+            } else if (protocolType.equals("STREAM_WEBSOCKET_RPC")) {
+                builder.setProtocol(STREAMWEBSOCKETRPC.class);
+            } else if (protocolType.equals("STREAM_JSON_RPC")) {
+                builder.setProtocol(STREAMJSONRPC.class);
+            } else {
+                builder.setProtocol(STREAMTHRIFTRPC.class);
+            }
         }
 
-        if (encodingtype.equals("ENC_XML")) {
-            builder.setEncoding(ENCXML.class);
-        } else if (encodingtype.equals("ENC_JSON_IETF")) {
-            builder.setEncoding(ENCJSONIETF.class);
-        } else {
+        if (null == encodingtype) {
             builder.setEncoding(ENCPROTO3.class);
+        } else {
+            if (encodingtype.equals("ENC_XML")) {
+                builder.setEncoding(ENCXML.class);
+            } else {
+                builder.setEncoding(ENCJSONIETF.class);
+            }
         }
+
         return builder.build();
     }
 
@@ -429,16 +441,44 @@ public class DataProcessor {
             SensorProfileBuilder sensorProfileBuilder = new SensorProfileBuilder();
             sensorProfileBuilder.setKey(new SensorProfileKey(list.get(i).getSensorGroupId()));
             sensorProfileBuilder.setSensorGroup(list.get(i).getSensorGroupId());
-            sensorProfileBuilder.setConfig(new org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824
-                    .telemetry.top.telemetry.system.subscriptions.persistent.subscription.sensor.profiles.sensor.profile
-                    .ConfigBuilder().setSensorGroup(list.get(i).getSensorGroupId())
-                    .setSampleInterval(list.get(i).getSampleInterval())
-                    .setHeartbeatInterval(list.get(i).getHeartbeatInterval())
-                    .setSuppressRedundant(list.get(i).isSuppressRedundant()).build());
+            sensorProfileBuilder.setConfig(convertSensorProfilesConfig(list.get(i).getSensorGroupId(),
+                    list.get(i).getSampleInterval(), list.get(i).getHeartbeatInterval(),
+                    list.get(i).isSuppressRedundant()));
             sensorProfileList.add(sensorProfileBuilder.build());
         }
         SensorProfilesBuilder builder = new SensorProfilesBuilder();
         builder.setSensorProfile(sensorProfileList);
+        return builder.build();
+    }
+
+    private org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.telemetry.system
+            .subscriptions.persistent.subscription.sensor.profiles.sensor.profile.Config convertSensorProfilesConfig(
+            String id, BigInteger sam, BigInteger hea, Boolean sup) {
+        org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824
+                .telemetry.top.telemetry.system.subscriptions.persistent.subscription.sensor.profiles.sensor.profile
+                .ConfigBuilder builder = new org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824
+                .telemetry.top.telemetry.system.subscriptions.persistent.subscription.sensor.profiles.sensor.profile
+                .ConfigBuilder();
+        if (null == id) {
+            builder.setSensorGroup(null);
+        } else {
+            builder.setSensorGroup(id);
+        }
+
+        if (null == hea) {
+            builder.setHeartbeatInterval(null);
+        } else {
+            builder.setHeartbeatInterval(hea);
+        }
+
+        if (null == sup) {
+            builder.setSuppressRedundant(null);
+        } else {
+            builder.setSuppressRedundant(sup);
+        }
+
+        builder.setSampleInterval(sam);
+
         return builder.build();
     }
 
