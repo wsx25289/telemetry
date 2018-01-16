@@ -7,6 +7,6 @@
  */
 package org.opendaylight.telemetry.core.api;
 
-public interface TelemetryPacketHandler {
-    <T> void process(T data);
+public interface TelemetryStreamMessageHandler<T> {
+    void process(T data);
 }

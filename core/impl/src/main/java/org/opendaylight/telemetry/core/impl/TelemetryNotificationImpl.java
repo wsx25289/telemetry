@@ -17,7 +17,7 @@ import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.opendaylight.telemetry.core.api.TelemetryNotification;
-import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
+import org.opendaylight.telemetry.core.api.TelemetryStreamMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TelemetryNotificationImpl implements TelemetryNotification {
+public class TelemetryNotificationImpl<T extends String> implements TelemetryNotification<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryNotificationImpl.class);
 
@@ -38,19 +38,24 @@ public class TelemetryNotificationImpl implements TelemetryNotification {
             .withLock(1L, 30L, TimeUnit.MILLISECONDS);
     private static final EventHandler<TelemetryNotificationEvent> DISPATCH_NOTIFICATIONS =
             (event, sequence, endOfBatch) -> event.deliverNotification();
-    private volatile Multimap<String, TelemetryPacketHandler> listeners = ArrayListMultimap.create();
+    private volatile Multimap<String, TelemetryStreamMessageHandler> listeners = ArrayListMultimap.create();
+    private static TelemetryNotificationImpl instance = new TelemetryNotificationImpl();
+
+    public static TelemetryNotificationImpl getInstance() {
+        return instance;
+    }
 
     public TelemetryNotificationImpl() {
         initDisruptor();
     }
 
     @Override
-    public void subscribe(TelemetryPacketHandler handler) {
+    public void subscribe(TelemetryStreamMessageHandler handler) {
         registerNotificationListener(handler);
     }
 
     @Override
-    public <T> void publish(T data) {
+    public void publish(T data) {
         //initDisruptor();
         if (null == data) {
             return;
@@ -59,7 +64,7 @@ public class TelemetryNotificationImpl implements TelemetryNotification {
         offerNotification(data);
     }
 
-    private <T> void publish(final long seq, T data, Collection<TelemetryPacketHandler> subscribers) {
+    private <T> void publish(final long seq, T data, Collection<TelemetryStreamMessageHandler> subscribers) {
         TelemetryNotificationEvent event = disruptor.get(seq);
         event.initialize(data, subscribers);
         disruptor.getRingBuffer().publish(seq);
@@ -75,7 +80,7 @@ public class TelemetryNotificationImpl implements TelemetryNotification {
     }
 
     private <T> void offerNotification(T data) {
-        final Collection<TelemetryPacketHandler> subscribers = listeners.get(TELEMETRY_DATA);
+        final Collection<TelemetryStreamMessageHandler> subscribers = listeners.get(TELEMETRY_DATA);
         if (subscribers.isEmpty()) {
             LOG.info("No subscriber");
             return;
@@ -84,7 +89,7 @@ public class TelemetryNotificationImpl implements TelemetryNotification {
         tryPublish(data, subscribers);
     }
 
-    private <T> void tryPublish(T data, Collection<TelemetryPacketHandler> subscribers) {
+    private <T> void tryPublish(T data, Collection<TelemetryStreamMessageHandler> subscribers) {
         final long seq;
         try {
             seq = disruptor.getRingBuffer().tryNext();
@@ -96,7 +101,7 @@ public class TelemetryNotificationImpl implements TelemetryNotification {
         publish(seq, data, subscribers);
     }
 
-    private void registerNotificationListener(TelemetryPacketHandler handler) {
+    private void registerNotificationListener(TelemetryStreamMessageHandler handler) {
         listeners.put(TELEMETRY_DATA, handler);
     }
 

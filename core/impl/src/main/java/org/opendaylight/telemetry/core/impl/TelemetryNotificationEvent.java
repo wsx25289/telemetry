@@ -8,23 +8,22 @@
 package org.opendaylight.telemetry.core.impl;
 
 import com.lmax.disruptor.EventFactory;
-import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
-
 import java.util.Collection;
+import org.opendaylight.telemetry.core.api.TelemetryStreamMessageHandler;
 
 public class TelemetryNotificationEvent<T> {
 
     public static final EventFactory<TelemetryNotificationEvent> FACTORY = TelemetryNotificationEvent::new;
     private T data;
-    private Collection<TelemetryPacketHandler> subscribers;
+    private Collection<TelemetryStreamMessageHandler> subscribers;
 
-    public void initialize(T data, Collection<TelemetryPacketHandler> subscribers) {
+    public void initialize(T data, Collection<TelemetryStreamMessageHandler> subscribers) {
         this.data = data;
         this.subscribers = subscribers;
     }
 
     public void deliverNotification() {
-        for (TelemetryPacketHandler r : subscribers) {
+        for (TelemetryStreamMessageHandler r : subscribers) {
             if (null != r) {
                 r.process(data);
             }

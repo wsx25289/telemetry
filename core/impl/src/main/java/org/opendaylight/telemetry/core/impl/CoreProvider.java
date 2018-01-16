@@ -8,8 +8,7 @@
 package org.opendaylight.telemetry.core.impl;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.telemetry.core.api.TelemetryNotification;
-import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
+import org.opendaylight.telemetry.core.api.TelemetryStreamMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,14 +17,11 @@ public class CoreProvider {
     private static final Logger LOG = LoggerFactory.getLogger(CoreProvider.class);
 
     private final DataBroker dataBroker;
-    private TelemetryNotification telemetryNotification;
-    private TelemetryPacketHandler handler;
+    private TelemetryStreamMessageHandler handler;
 
-    public CoreProvider(final DataBroker dataBroker, TelemetryNotificationImpl telemetryNotification,
-                        TelemetryPacketHandlerImpl telemetryPacketHandler) {
+    public CoreProvider(final DataBroker dataBroker, TelemetryStreamMessageHandlerImpl telemetryStreamMessageHandler) {
         this.dataBroker = dataBroker;
-        this.telemetryNotification = telemetryNotification;
-        this.handler = telemetryPacketHandler;
+        this.handler = telemetryStreamMessageHandler;
     }
 
     /**
@@ -34,9 +30,9 @@ public class CoreProvider {
     public void init() {
         LOG.info("test Start");
 //        TelemetryNotification telemetryNotification = new TelemetryNotificationImpl();
-//        TelemetryPacketHandler handler = new TelemetryPacketHandlerImpl();
-        telemetryNotification.subscribe(handler);
-        telemetryNotification.publish("Testtttttttttttttttttttttttttttttt");
+//        TelemetryPacketHandler handler = new TelemetryStreamMessageHandlerImpl();
+        TelemetryNotificationImpl.getInstance().subscribe(handler);
+        TelemetryNotificationImpl.getInstance().publish("Testtttttttttttttttttttttttttttttt");
     }
 
     /**

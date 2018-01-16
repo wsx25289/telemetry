@@ -7,12 +7,12 @@
  */
 package org.opendaylight.telemetry.core.impl;
 
-import org.opendaylight.telemetry.core.api.TelemetryPacketHandler;
+import org.opendaylight.telemetry.core.api.TelemetryStreamMessageHandler;
 
-public class TelemetryPacketHandlerImpl implements TelemetryPacketHandler {
+public class TelemetryStreamMessageHandlerImpl<T> implements TelemetryStreamMessageHandler<T> {
 
     @Override
-    public <T> void process(T data) {
+    public void process(T data) {
         System.out.print("Process data is: " + data);
     }
 }

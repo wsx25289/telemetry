@@ -21,18 +21,17 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
   <service ref="notificationImpl" interface="org.opendaylight.telemetry.core.api.TelemetryNotification"/>
 
-  <bean id="telemetryPacketHandlerImpl"
-        class="org.opendaylight.telemetry.core.impl.TelemetryPacketHandlerImpl">
+  <bean id="telemetryStreamMessageHandlerImpl"
+        class="org.opendaylight.telemetry.core.impl.TelemetryStreamMessageHandlerImpl">
   </bean>
 
-  <service ref="telemetryPacketHandlerImpl" interface="org.opendaylight.telemetry.core.api.TelemetryPacketHandler"/>
+  <service ref="telemetryStreamMessageHandlerImpl" interface="org.opendaylight.telemetry.core.api.TelemetryStreamMessageHandler"/>
 
   <bean id="provider"
     class="org.opendaylight.telemetry.core.impl.CoreProvider"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
-    <argument ref="notificationImpl" />
-    <argument ref="telemetryPacketHandlerImpl" />
+    <argument ref="telemetryStreamMessageHandlerImpl" />
   </bean>
 
 </blueprint>
