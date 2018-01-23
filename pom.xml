@@ -29,7 +29,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </scm>
 
   <modules>
-    <module>grpcserver</module>
+    <module>grpc</module>
     <module>configurator</module>
     <module>core</module>
     <!--

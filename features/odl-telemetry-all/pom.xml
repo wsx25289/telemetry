@@ -21,7 +21,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.telemetry</groupId>
-            <artifactId>odl-telemetry-grpcserver</artifactId>
+            <artifactId>odl-telemetry-grpc</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
