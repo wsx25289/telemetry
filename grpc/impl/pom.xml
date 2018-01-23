@@ -53,7 +53,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>grpcserver-api</artifactId>
+      <artifactId>grpc-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 

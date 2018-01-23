@@ -32,12 +32,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>grpcserver-api</artifactId>
+            <artifactId>grpc-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>grpcserver-impl</artifactId>
+            <artifactId>grpc-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
