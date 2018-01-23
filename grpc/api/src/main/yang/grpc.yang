@@ -1,9 +1,22 @@
 module grpc {
     yang-version 1.1;
-    namespace "urn:opendaylight:params:xml:ns:yang:grpcserver";
-    prefix "grpcserver";
+    namespace "urn:opendaylight:params:xml:ns:yang:grpc";
+    prefix "grpc";
 
-    revision "2017-08-30" { // TODO change revision to date of model creation
-        description "Initial revision of grpcserver model";
+    revision "2017-08-30" {
+        description "Initial revision of grpc model";
+    }
+
+    import ietf-inet-types {
+        prefix "inet";
+        revision-date 2013-07-15;
+    }
+
+    rpc start-grpc-server {
+        input {
+            leaf port {
+                type inet:port-number;
+            }
+        }
     }
 }

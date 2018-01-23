@@ -21,13 +21,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <name>ODL :: telemetry :: ${project.artifactId}</name> <!-- DO NOT CHANGE - Used by Sonar to set project name -->
   <packaging>pom</packaging>
 
-  <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/grpc.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/grpc.git</developerConnection>
-    <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/grpc:Main</url>
-  </scm>
-
   <modules>
     <module>api</module>
     <module>impl</module>

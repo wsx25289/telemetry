@@ -16,7 +16,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     odl:type="default" />
 
   <bean id="provider"
-    class="org.opendaylight.telemetry.grpc.server.impl.GrpcServerProvider"
+    class="org.opendaylight.telemetry.grpc.server.GrpcProvider"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
   </bean>
