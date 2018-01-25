@@ -189,6 +189,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
               <instructions>
                   <Import-Package>
                       !autovalue.shaded.org.apache.commons.logging,
+                      !io.netty.internal.tcnative,
+                      !org.conscrypt,
                       !com.google.protobuf.nano,
                       !com.jcraft.jzlib,
                       !com.ning.compress,
