@@ -143,7 +143,7 @@ public class DataProcessor {
 
     public void addNodeSubscriptionToDataStore(List<TelemetryNode> nodeGroupList) {
         for (TelemetryNode nodeGroup : nodeGroupList) {
-            operateDataStore(ConfigurationType.ADD, nodeGroup, IidConstants.getNodeGroupPath(nodeGroup.getNodeId()));
+            operateDataStore(ConfigurationType.MODIFY, nodeGroup, IidConstants.getNodeGroupPath(nodeGroup.getNodeId()));
         }
     }
 

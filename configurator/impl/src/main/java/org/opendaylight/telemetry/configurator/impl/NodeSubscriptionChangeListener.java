@@ -13,6 +13,7 @@ import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.TelemetrySystem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.destination.specification.TelemetryDestinationGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.node.subscription.TelemetryNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.TelemetrySubscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,26 +44,34 @@ public class NodeSubscriptionChangeListener implements DataTreeChangeListener<Te
             DataObjectModification<TelemetryNode> rootNode = change.getRootNode();
             switch (rootNode.getModificationType()) {
                 case WRITE:
-                    LOG.info("The subscription of {} was created or replaced", rootNode.getDataAfter().getNodeId());
-                    List<TelemetrySensorGroup> sensorGroupList = dataProcessor.getSensorGroupDetailById(
-                            rootNode.getDataAfter().getTelemetrySubscription());
-                    List<TelemetryDestinationGroup> destinationGroupList = dataProcessor.getDestinationGroupDetailById(
-                            rootNode.getDataAfter().getTelemetrySubscription());
-                    TelemetrySystem telemetrySystem = dataProcessor.convertDataToSouth(sensorGroupList,
-                            destinationGroupList, rootNode.getDataAfter().getTelemetrySubscription());
-                    configurationWriter.writeTelemetryConfig(ConfigurationType.ADD, rootNode.getDataAfter().getNodeId(), telemetrySystem);
+                    LOG.info("The subscription of {} was added, before:{}, after:{}", rootNode.getDataAfter().getNodeId(),
+                            rootNode.getDataBefore(), rootNode.getDataAfter());
+                    TelemetrySystem telemetrySystemAdded = changeNorthDataToSouth(rootNode.getDataAfter().getTelemetrySubscription());
+                    configurationWriter.writeTelemetryConfig(ConfigurationType.ADD, rootNode.getDataAfter().getNodeId(), telemetrySystemAdded);
                     break;
                 case SUBTREE_MODIFIED:
-                    LOG.info("process modify procedure");
+                    LOG.info("The subscription of {} was modified, before:{}, after:{}", rootNode.getDataAfter().getNodeId(),
+                            rootNode.getDataBefore(), rootNode.getDataAfter());
+                    TelemetrySystem telemetrySystemModified = changeNorthDataToSouth(rootNode.getDataAfter().getTelemetrySubscription());
+                    configurationWriter.writeTelemetryConfig(ConfigurationType.MODIFY, rootNode.getDataAfter().getNodeId(), telemetrySystemModified);
                     break;
                 case DELETE:
-                    LOG.info("The all subscription of {} was deleted", rootNode.getDataBefore().getNodeId());
+                    LOG.info("The all subscription of {} was deleted, before:{}, after:{}", rootNode.getDataBefore().getNodeId(),
+                            rootNode.getDataBefore(), rootNode.getDataAfter());
                     configurationWriter.writeTelemetryConfig(ConfigurationType.DELETE, rootNode.getDataBefore().getNodeId(), null);
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    private TelemetrySystem changeNorthDataToSouth(List<TelemetrySubscription> subscriptionList) {
+        List<TelemetrySensorGroup> sensorGroupList = dataProcessor.getSensorGroupDetailById(
+                subscriptionList);
+        List<TelemetryDestinationGroup> destinationGroupList = dataProcessor.getDestinationGroupDetailById(
+                subscriptionList);
+        return dataProcessor.convertDataToSouth(sensorGroupList, destinationGroupList, subscriptionList);
     }
 
 }
