@@ -6,24 +6,42 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.telemetry.grpc.notification;
+import com.lmax.disruptor.InsufficientCapacityException;
 import com.lmax.disruptor.RingBuffer;
 import org.opendaylight.telemetry.grpc.proto.TelemetryStreamRequest;
 
+import java.math.BigInteger;
+
 public class TelemetryEventProducer {
     private RingBuffer<TelemetryEvent> ringBuffer;
-
+    private BigInteger dropCount = BigInteger.ZERO;
+    private BigInteger publishCount = BigInteger.ZERO;
     public TelemetryEventProducer(RingBuffer<TelemetryEvent> ringBuffer) {
         this.ringBuffer = ringBuffer;
     }
 
+    /**
+     * Producer put data into ring buffer. This method is not thread safe,
+     * if multi-threads call this method, it will broken the disruptor.
+     * @param data publish data.
+     */
     public void onData(TelemetryStreamRequest data) {
-        long sequence = ringBuffer.next();
         try {
+            long sequence = ringBuffer.tryNext();
             TelemetryEvent event = ringBuffer.get(sequence);
             event.setValue(data);
-        }
-        finally {
             ringBuffer.publish(sequence);
+            publishCount = publishCount.add(BigInteger.valueOf(1));
+        } catch (InsufficientCapacityException e) {
+            dropCount = dropCount.add(BigInteger.valueOf(1));
         }
+    }
+
+    public String getDropount() {
+        return dropCount.toString();
+    }
+
+    public String getPublishCount() {
+        return publishCount.toString();
     }
 }

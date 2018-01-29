@@ -14,18 +14,19 @@ import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.opendaylight.telemetry.grpc.proto.TelemetryStreamRequest;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
+import static org.opendaylight.telemetry.grpc.notification.TelemetryEvent.FACTORY;
+
+/***
+ * Telemetry notification implementation, initialize a disruptor, single producer and single
+ * consumer
+ */
 public class TelemetryNotificationImpl {
     private static TelemetryNotificationImpl instance = new TelemetryNotificationImpl();
     private Disruptor<TelemetryEvent> disruptor;
     private TelemetryEventProducer producer;
     private TelemetryEventConsumer consumer;
-    private ExecutorService executorService;
-    private TelemetryEventFactory factory;
-    private WaitStrategy waitStrategy;
-    private Integer BUFFER_SIZE = 2048;
 
     private TelemetryNotificationImpl() {
         init();
@@ -42,10 +43,10 @@ public class TelemetryNotificationImpl {
     }
 
     private void initDisruptor() {
-        factory = new TelemetryEventFactory();
-        executorService = Executors.newCachedThreadPool();
-        waitStrategy = new YieldingWaitStrategy();
-        disruptor = new Disruptor<>(factory, BUFFER_SIZE, executorService, ProducerType.SINGLE, waitStrategy);
+        ThreadFactory threadFactory = Thread::new;
+        WaitStrategy waitStrategy = new YieldingWaitStrategy();
+        Integer BUFFER_SIZE = 2048;
+        disruptor = new Disruptor<>(FACTORY, BUFFER_SIZE, threadFactory, ProducerType.SINGLE, waitStrategy);
         disruptor.handleEventsWith(consumer);
         disruptor.start();
     }
@@ -75,9 +76,17 @@ public class TelemetryNotificationImpl {
         if (disruptor != null) {
             disruptor.shutdown();
         }
+    }
 
-        if (executorService != null) {
-            executorService.shutdown();
-        }
+    public String getDropCount() {
+        return producer.getDropount();
+    }
+
+    public String getPublishCount() {
+        return producer.getPublishCount();
+    }
+
+    public String getConsumeCount() {
+        return consumer.getConsumeCount();
     }
 }

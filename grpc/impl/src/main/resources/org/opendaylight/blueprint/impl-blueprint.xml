@@ -21,4 +21,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <argument ref="dataBroker" />
   </bean>
 
+  <odl:rpc-implementation ref="provider" />
+
 </blueprint>
