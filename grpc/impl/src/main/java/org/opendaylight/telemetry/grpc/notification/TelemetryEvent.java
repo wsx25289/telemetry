@@ -7,9 +7,11 @@
  */
 package org.opendaylight.telemetry.grpc.notification;
 
+import com.lmax.disruptor.EventFactory;
 import org.opendaylight.telemetry.grpc.proto.TelemetryStreamRequest;
 
 public class TelemetryEvent {
+    public static TelemetryEventFactory FACTORY = new TelemetryEventFactory();
     private TelemetryStreamRequest value;
     public void setValue(TelemetryStreamRequest value) {
         this.value = value;
@@ -17,5 +19,12 @@ public class TelemetryEvent {
 
     public TelemetryStreamRequest getValue() {
         return value;
+    }
+
+    private static class TelemetryEventFactory implements EventFactory<TelemetryEvent> {
+        @Override
+        public TelemetryEvent newInstance() {
+            return new TelemetryEvent();
+        }
     }
 }

@@ -12,10 +12,18 @@ module grpc {
         revision-date 2013-07-15;
     }
 
-    rpc start-grpc-server {
-        input {
-            leaf port {
-                type inet:port-number;
+    rpc get-notification-stats {
+        output {
+            leaf drop-count {
+                type string;
+            }
+
+            leaf publish-count {
+                type string;
+            }
+
+            leaf cousume-count {
+                type string;
             }
         }
     }

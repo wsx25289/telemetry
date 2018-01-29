@@ -11,11 +11,13 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.lmax.disruptor.EventHandler;
 
+import java.math.BigInteger;
 import java.util.Collection;
 
 public class TelemetryEventConsumer implements EventHandler<TelemetryEvent> {
     private final String TELEMETRY_DATA = "TD";
     private volatile Multimap<String, StreamDataHandler> map = ArrayListMultimap.create();
+    private BigInteger consumeCount = BigInteger.ZERO;
 
     @Override
     public void onEvent(TelemetryEvent event, long sequence, boolean endOfBatch) throws Exception {
@@ -23,6 +25,7 @@ public class TelemetryEventConsumer implements EventHandler<TelemetryEvent> {
         for(StreamDataHandler handler : subscribers) {
             handler.process(event.getValue());
         }
+        consumeCount = consumeCount.add(BigInteger.valueOf(1));
     }
 
     public void addSubscriber(StreamDataHandler handler) {
@@ -31,5 +34,9 @@ public class TelemetryEventConsumer implements EventHandler<TelemetryEvent> {
 
     public void removeSubscriber(StreamDataHandler handler) {
         map.get(TELEMETRY_DATA).remove(handler);
+    }
+
+    public String getConsumeCount() {
+        return consumeCount.toString();
     }
 }

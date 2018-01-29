@@ -29,4 +29,16 @@ public final class TelemetryNotification {
     public static void shutdown() {
         instance.shutdown();
     }
+
+    public static String getDropCount() {
+        return instance.getDropCount();
+    }
+
+    public static String getPublishCount() {
+        return instance.getPublishCount();
+    }
+
+    public static String getConsumeCount() {
+        return instance.getConsumeCount();
+    }
 }
