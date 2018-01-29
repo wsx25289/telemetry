@@ -124,6 +124,11 @@ module telemetry-configurator-api {
            list telemetry-node {
               key "node-id";
               uses telemetry-cfg:node-identity;
+
+              list telemetry-node-subscription {
+                 key "subscription-name";
+                 uses oc-telemetry:telemetry-subscription-name-config;
+              }
            }
         }
 

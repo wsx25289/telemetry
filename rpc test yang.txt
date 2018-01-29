@@ -145,10 +145,16 @@ http://127.0.0.1:8181/restconf/operations/telemetry-configurator-api:delete-node
 {
 input: {
              telemetry-node:[{
-                                node-id:node1
+                                node-id:node1,
+                                telemetry-node-subscription:[{
+                                      subscription-name:subscription1
+                                }]
                             },
                             {
-                                node-id:node2
+                                node-id:node2,
+                                telemetry-node-subscription:[{
+                                      subscription-name:subscription1
+                                }]
                             }]
 	     }
 }

@@ -53,6 +53,8 @@ import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.types.rev170824.*;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.types.inet.rev170824.Dscp;
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.types.inet.rev170824.Ipv4Address;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.node.part.input.telemetry.node.TelemetryNodeSubscription;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.node.telemetry.subscription.input.telemetry.node.TelemetryNodeSubscription;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.telemetry.destination.input.TelemetryDestination;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.telemetry.sensor.input.TelemetrySensor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.Telemetry;
@@ -206,7 +208,17 @@ public class DataProcessor {
                 .delete.node.telemetry.subscription.input.TelemetryNode telemetryNode : nodeList) {
             for (TelemetryNode telemetryNodeGroup : nodeGroupList) {
                 if (telemetryNode.getNodeId().equals(telemetryNodeGroup.getNodeId())) {
-                    operateDataStore(ConfigurationType.DELETE, null, IidConstants.getNodeGroupPath(telemetryNodeGroup.getNodeId()));
+                    processDelete(telemetryNode.getNodeId(), telemetryNode.getTelemetryNodeSubscription(), telemetryNodeGroup.getTelemetrySubscription());
+                }
+            }
+        }
+    }
+
+    private void processDelete(String nodeId, List<TelemetryNodeSubscription> telemetryNodeSubscription, List<TelemetrySubscription> nodeSubscriptionList) {
+        for (int i = 0; i < telemetryNodeSubscription.size(); i++) {
+            for (int j = 0; j < nodeSubscriptionList.size(); j++) {
+                if (telemetryNodeSubscription.get(i).getSubscriptionName().equals(nodeSubscriptionList.get(j).getSubscriptionName())) {
+                    operateDataStore(ConfigurationType.DELETE, null, IidConstants.getSubscriptionPath(nodeId, telemetryNodeSubscription.get(i).getSubscriptionName()));
                 }
             }
         }
@@ -216,15 +228,23 @@ public class DataProcessor {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120
                 .telemetry.subscription.specification.telemetry.subscription.TelemetrySensor> sensorList = new ArrayList<>();
 
-        for (TelemetrySubscription subscription : list) {
-            for (org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120
-                    .telemetry.subscription.specification.telemetry.subscription.TelemetrySensor sensor :
-                    subscription.getTelemetrySensor()) {
-                if (!checkSensorExist(sensor, sensorList)) {
-                    sensorList.add(sensor);
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).getTelemetrySensor().size(); j++) {
+                if (!checkSensorExist(list.get(i).getTelemetrySensor().get(j), sensorList)) {
+                    sensorList.add(list.get(i).getTelemetrySensor().get(j));
                 }
             }
         }
+
+//        for (TelemetrySubscription subscription : list) {
+//            for (org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120
+//                    .telemetry.subscription.specification.telemetry.subscription.TelemetrySensor sensor :
+//                    subscription.getTelemetrySensor()) {
+//                if (!checkSensorExist(sensor, sensorList)) {
+//                    sensorList.add(sensor);
+//                }
+//            }
+//        }
 
         return sensorDetail(sensorList, getSensorGroupFromDataStore(IidConstants.TELEMETRY_IID));
     }
@@ -261,15 +281,23 @@ public class DataProcessor {
                 .telemetry.subscription.specification.telemetry.subscription.TelemetryDestination> destinationList
                 = new ArrayList<>();
 
-        for (TelemetrySubscription subscription : list) {
-            for (org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120
-                    .telemetry.subscription.specification.telemetry.subscription.TelemetryDestination destination :
-                    subscription.getTelemetryDestination()) {
-                if (!checkDestinationExist(destination, destinationList)) {
-                    destinationList.add(destination);
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).getTelemetryDestination().size(); j++) {
+                if (!checkDestinationExist(list.get(i).getTelemetryDestination().get(j), destinationList)) {
+                    destinationList.add(list.get(i).getTelemetryDestination().get(j));
                 }
             }
         }
+
+//        for (TelemetrySubscription subscription : list) {
+//            for (org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120
+//                    .telemetry.subscription.specification.telemetry.subscription.TelemetryDestination destination :
+//                    subscription.getTelemetryDestination()) {
+//                if (!checkDestinationExist(destination, destinationList)) {
+//                    destinationList.add(destination);
+//                }
+//            }
+//        }
 
         return destinationDetail(destinationList, getDestinationGroupFromDataStore(IidConstants.TELEMETRY_IID));
     }

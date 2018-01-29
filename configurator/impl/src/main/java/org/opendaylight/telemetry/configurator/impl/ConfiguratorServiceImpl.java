@@ -32,22 +32,21 @@ import org.slf4j.LoggerFactory;
 public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService {
     private static final Logger LOG = LoggerFactory.getLogger(ConfiguratorServiceImpl.class);
 
-    private ConfigurationWriter configurationWriter;
     private DataProcessor dataProcessor;
 
-    public ConfiguratorServiceImpl(ConfigurationWriter configurationWriter, DataProcessor dataProcessor) {
-        this.configurationWriter = configurationWriter;
+    public ConfiguratorServiceImpl(DataProcessor dataProcessor) {
         this.dataProcessor = dataProcessor;
     }
 
-    public Future<RpcResult<AddTelemetrySensorOutput>> addTelemetrySensor(AddTelemetrySensorInput var1) {
+    @Override
+    public Future<RpcResult<AddTelemetrySensorOutput>> addTelemetrySensor(AddTelemetrySensorInput input) {
         //check input
         AddTelemetrySensorOutputBuilder builder = new AddTelemetrySensorOutputBuilder();
-        if (null == var1) {
+        if (null == input) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
-        List<TelemetrySensorGroup> sensorGroupList = var1.getTelemetrySensorGroup();
+        List<TelemetrySensorGroup> sensorGroupList = input.getTelemetrySensorGroup();
         if (null == sensorGroupList || sensorGroupList.isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "There is no Sensor group provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
@@ -88,8 +87,9 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<QueryTelemetrySensorOutput>> queryTelemetrySensor(QueryTelemetrySensorInput var1) {
-        if (null == var1) {
+    @Override
+    public Future<RpcResult<QueryTelemetrySensorOutput>> queryTelemetrySensor(QueryTelemetrySensorInput input) {
+        if (null == input) {
             return rpcErr("Input is null!");
         }
 
@@ -102,14 +102,15 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<DeleteTelemetrySensorOutput>> deleteTelemetrySensor(DeleteTelemetrySensorInput var1) {
+    @Override
+    public Future<RpcResult<DeleteTelemetrySensorOutput>> deleteTelemetrySensor(DeleteTelemetrySensorInput input) {
         //check input
         DeleteTelemetrySensorOutputBuilder builder = new DeleteTelemetrySensorOutputBuilder();
-        if (null == var1) {
+        if (null == input) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
-        if (null == var1.getTelemetrySensor() || var1.getTelemetrySensor().isEmpty()) {
+        if (null == input.getTelemetrySensor() || input.getTelemetrySensor().isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "There is no sensor group id provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
@@ -120,25 +121,20 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        //if (!dataProcessor.checkSensorGroupExist(var1.getTelemetrySensor(), allSensorGroupList)) {
-        //    builder.setConfigureResult(getConfigResult(false, "Sensor group is not exist!"));
-        //    return RpcResultBuilder.success(builder.build()).buildFuture();
-        //}
-        dataProcessor.deleteSensorGroupFromDataStore(var1.getTelemetrySensor(), allSensorGroupList);
-        //convertModifiedInputToSouthData();
-        //configurationWriter.writeTelemetryConfig(ConfigurationType.MODIFY, "1", "2");
+        dataProcessor.deleteSensorGroupFromDataStore(input.getTelemetrySensor(), allSensorGroupList);
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<AddTelemetryDestinationOutput>> addTelemetryDestination(AddTelemetryDestinationInput var1) {
+    @Override
+    public Future<RpcResult<AddTelemetryDestinationOutput>> addTelemetryDestination(AddTelemetryDestinationInput input) {
         //check input
         AddTelemetryDestinationOutputBuilder builder = new AddTelemetryDestinationOutputBuilder();
-        if (null == var1) {
+        if (null == input) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
-        List<TelemetryDestinationGroup> destinationGroupList = var1.getTelemetryDestinationGroup();
+        List<TelemetryDestinationGroup> destinationGroupList = input.getTelemetryDestinationGroup();
         if (null == destinationGroupList || destinationGroupList.isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "There is no destination group provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
@@ -177,9 +173,10 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<QueryTelemetryDestinationOutput>> queryTelemetryDestination(QueryTelemetryDestinationInput var1) {
+    @Override
+    public Future<RpcResult<QueryTelemetryDestinationOutput>> queryTelemetryDestination(QueryTelemetryDestinationInput input) {
         //check input
-        if (null == var1) {
+        if (null == input) {
             return rpcErr("Input is null!");
         }
 
@@ -192,14 +189,15 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<DeleteTelemetryDestinationOutput>> deleteTelemetryDestination(DeleteTelemetryDestinationInput var1) {
+    @Override
+    public Future<RpcResult<DeleteTelemetryDestinationOutput>> deleteTelemetryDestination(DeleteTelemetryDestinationInput input) {
         //check input
         DeleteTelemetryDestinationOutputBuilder builder = new DeleteTelemetryDestinationOutputBuilder();
-        if (null == var1) {
+        if (null == input) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
-        if (null == var1.getTelemetryDestination() || var1.getTelemetryDestination().isEmpty()) {
+        if (null == input.getTelemetryDestination() || input.getTelemetryDestination().isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "There is no destination group id provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
@@ -210,20 +208,21 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        dataProcessor.deleteDestinationGroupFromDataStore(var1.getTelemetryDestination(), allDestinationGroupList);
+        dataProcessor.deleteDestinationGroupFromDataStore(input.getTelemetryDestination(), allDestinationGroupList);
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<ConfigureNodeTelemetrySubscriptionOutput>> configureNodeTelemetrySubscription(ConfigureNodeTelemetrySubscriptionInput var1) {
+    @Override
+    public Future<RpcResult<ConfigureNodeTelemetrySubscriptionOutput>> configureNodeTelemetrySubscription(ConfigureNodeTelemetrySubscriptionInput input) {
         //check input
         ConfigureNodeTelemetrySubscriptionOutputBuilder builder = new ConfigureNodeTelemetrySubscriptionOutputBuilder();
-        if (null == var1) {
+        if (null == input) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        List<TelemetryNode> nodeGroupList = var1.getTelemetryNode();
+        List<TelemetryNode> nodeGroupList = input.getTelemetryNode();
         if (null == nodeGroupList || nodeGroupList.isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "There is no node provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
@@ -273,17 +272,16 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
 
         }
 
-//        LOG.info("Get node subscription in data store");
-//        List<TelemetryNodeGroup> allnodeGroupList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
 
-        dataProcessor.addNodeSubscriptionToDataStore(var1.getTelemetryNode());
+        dataProcessor.addNodeSubscriptionToDataStore(input.getTelemetryNode());
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<QueryNodeTelemetrySubscriptionOutput>> queryNodeTelemetrySubscription(QueryNodeTelemetrySubscriptionInput var1) {
+    @Override
+    public Future<RpcResult<QueryNodeTelemetrySubscriptionOutput>> queryNodeTelemetrySubscription(QueryNodeTelemetrySubscriptionInput input) {
         //check input
-        if (null == var1) {
+        if (null == input) {
             return rpcErr("Input is null!");
         }
 
@@ -296,28 +294,40 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
-    public Future<RpcResult<DeleteNodeTelemetrySubscriptionOutput>> deleteNodeTelemetrySubscription(DeleteNodeTelemetrySubscriptionInput var1) {
+    @Override
+    public Future<RpcResult<DeleteNodeTelemetrySubscriptionOutput>> deleteNodeTelemetrySubscription(DeleteNodeTelemetrySubscriptionInput input) {
         //check input
         DeleteNodeTelemetrySubscriptionOutputBuilder builder = new DeleteNodeTelemetrySubscriptionOutputBuilder();
-        if (null == var1) {
+        if (null == input) {
             builder.setConfigureResult(getConfigResult(false, "Input is null!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        if (null == var1.getTelemetryNode() || var1.getTelemetryNode().isEmpty()) {
+        if (null == input.getTelemetryNode() || input.getTelemetryNode().isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "There is no node id provided by input!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
+
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
+                    || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
+                builder.setConfigureResult(getConfigResult(false, "There is no subscription provided in node:" +
+                        input.getTelemetryNode().get(i).getNodeId()));
+                return RpcResultBuilder.success(builder.build()).buildFuture();
+            }
+        }
+
         List<TelemetryNode> allNodeSubscriptionList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allNodeSubscriptionList || allNodeSubscriptionList.isEmpty()) {
             builder.setConfigureResult(getConfigResult(false, "No node subscription configured!"));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        dataProcessor.deleteNodeSubscriptionFromDataStore(var1.getTelemetryNode(), allNodeSubscriptionList);
+        dataProcessor.deleteNodeSubscriptionFromDataStore(input.getTelemetryNode(), allNodeSubscriptionList);
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
+
 
     private ConfigureResult getConfigResult(boolean result, String errorCause) {
         ConfigureResultBuilder cfgResultBuilder  = new ConfigureResultBuilder();
