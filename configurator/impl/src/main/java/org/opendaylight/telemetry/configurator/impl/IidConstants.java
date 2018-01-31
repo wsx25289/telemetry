@@ -12,6 +12,8 @@ import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824
 import org.opendaylight.yang.gen.v1.http.openconfig.net.yang.telemetry.rev170824.telemetry.top.TelemetrySystem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.md.sal.common.rev131028.rpc.routing.table.Routes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.node.telemetry.subscription.sensor.input.telemetry.node.telemetry.node.subscription.TelemetryNodeSubscriptionSensor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.api.rev171120.delete.node.telemetry.subscription.sensor.input.telemetry.node.telemetry.node.subscription.TelemetryNodeSubscriptionSensorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.Telemetry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.TelemetryNodeSubscription;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.destination.specification.TelemetryDestinationGroup;
@@ -20,6 +22,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.node.subscription.TelemetryNodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.TelemetrySubscription;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.TelemetrySubscriptionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.telemetry.subscription.TelemetryDestination;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.telemetry.subscription.TelemetryDestinationKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.telemetry.subscription.TelemetrySensor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.telemetry.params.xml.ns.yang.configurator.rev171120.telemetry.subscription.specification.telemetry.subscription.TelemetrySensorKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -54,5 +60,17 @@ public class IidConstants {
     public static final InstanceIdentifier<TelemetrySubscription> getSubscriptionPath(String nodeId, String name) {
         return InstanceIdentifier.create(Telemetry.class).child(TelemetryNode.class, new TelemetryNodeKey(nodeId))
                 .child(TelemetrySubscription.class, new TelemetrySubscriptionKey(name));
+    }
+
+    public static final InstanceIdentifier<TelemetrySensor> getSubscriptionSensorPath(String nodeId, String name, String sensorId) {
+        return InstanceIdentifier.create(Telemetry.class).child(TelemetryNode.class, new TelemetryNodeKey(nodeId))
+                .child(TelemetrySubscription.class, new TelemetrySubscriptionKey(name))
+                .child(TelemetrySensor.class, new TelemetrySensorKey(sensorId));
+    }
+
+    public static final InstanceIdentifier<TelemetryDestination> getSubscriptionDestinationPath(String nodeId, String name, String destinationId) {
+        return InstanceIdentifier.create(Telemetry.class).child(TelemetryNode.class, new TelemetryNodeKey(nodeId))
+                .child(TelemetrySubscription.class, new TelemetrySubscriptionKey(name))
+                .child(TelemetryDestination.class, new TelemetryDestinationKey(destinationId));
     }
 }

@@ -137,4 +137,50 @@ module telemetry-configurator-api {
         }
     }
 
+    rpc delete-node-telemetry-subscription-sensor {
+        input {
+           list telemetry-node {
+              key "node-id";
+              uses telemetry-cfg:node-identity;
+
+              list telemetry-node-subscription {
+                 key "subscription-name";
+                 uses oc-telemetry:telemetry-subscription-name-config;
+
+                 list telemetry-node-subscription-sensor {
+                    key "sensor-group-id";
+                    uses oc-telemetry:telemetry-sensor-group-config;
+                 }
+              }
+           }
+        }
+
+        output {
+           uses configure-result;
+        }
+    }
+
+    rpc delete-node-telemetry-subscription-destination {
+        input {
+           list telemetry-node {
+              key "node-id";
+              uses telemetry-cfg:node-identity;
+
+              list telemetry-node-subscription {
+                 key "subscription-name";
+                 uses oc-telemetry:telemetry-subscription-name-config;
+
+                 list telemetry-node-subscription-destination {
+                    key "destination-group-id";
+                    uses telemetry-cfg:telemetry-destination-group;
+                 }
+              }
+           }
+        }
+
+        output {
+           uses configure-result;
+        }
+    }
+
 }

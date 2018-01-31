@@ -160,6 +160,75 @@ input: {
 }
 
 
+delete subscription sensor
+http://127.0.0.1:8181/restconf/operations/telemetry-configurator-api:delete-node-telemetry-subscription-sensor
+
+{
+input: {
+             telemetry-node:[{
+                                node-id:node1,
+                                telemetry-node-subscription:[{
+                                      subscription-name:subscription1.
+                                      telemetry-node-subscription-sensor:[{
+                                          sensor-group-id:sensor1
+                                      },
+                                      {
+                                          sensor-group-id:sensor2
+                                      }]
+                                }]
+                            },
+                            {
+                                node-id:node2,
+                                telemetry-node-subscription:[{
+                                      subscription-name:subscription1,
+                                      telemetry-node-subscription-sensor:[{
+                                          sensor-group-id:sensor1
+                                      },
+                                      {
+                                          sensor-group-id:sensor2
+                                      }]
+                                }]
+                            }]
+	     }
+}
+
+
+delete subscription destination
+http://127.0.0.1:8181/restconf/operations/telemetry-configurator-api:delete-node-telemetry-subscription-destination
+
+{
+input: {
+             telemetry-node:[{
+                                node-id:node1,
+                                telemetry-node-subscription:[{
+                                      subscription-name:subscription1,
+                                      telemetry-node-subscription-destination:[{
+                                          destination-group-id:destination1
+                                      },
+                                      {
+                                          destination-group-id:destination2
+                                      }]
+                                }]
+                            },
+                            {
+                                node-id:node2,
+                                telemetry-node-subscription:[{
+                                      subscription-name:subscription1,
+                                      telemetry-node-subscription-destination:[{
+                                          destination-group-id:destination1
+                                      },
+                                      {
+                                          destination-group-id:destination2
+                                      }]
+                                }]
+                            }]
+	     }
+}
+
+
+
+
+
 http://IP:8181/apidoc/explorer/index.html
 
 

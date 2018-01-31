@@ -323,7 +323,103 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        dataProcessor.deleteNodeSubscriptionFromDataStore(input.getTelemetryNode(), allNodeSubscriptionList);
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            dataProcessor.deleteNodeSubscriptionFromDataStore(input.getTelemetryNode().get(i).getNodeId(),
+                    input.getTelemetryNode().get(i).getTelemetryNodeSubscription());
+        }
+        builder.setConfigureResult(getConfigResult(true, ""));
+        return RpcResultBuilder.success(builder.build()).buildFuture();
+    }
+
+    @Override
+    public Future<RpcResult<DeleteNodeTelemetrySubscriptionSensorOutput>> deleteNodeTelemetrySubscriptionSensor(DeleteNodeTelemetrySubscriptionSensorInput input) {
+        DeleteNodeTelemetrySubscriptionSensorOutputBuilder builder = new DeleteNodeTelemetrySubscriptionSensorOutputBuilder();
+        if (null == input) {
+            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
+
+        if (null == input.getTelemetryNode() || input.getTelemetryNode().isEmpty()) {
+            builder.setConfigureResult(getConfigResult(false, "There is no node id provided by input!"));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
+
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
+                    || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
+                builder.setConfigureResult(getConfigResult(false, "There is no subscription provided in node:" +
+                        input.getTelemetryNode().get(i).getNodeId()));
+                return RpcResultBuilder.success(builder.build()).buildFuture();
+            } else {
+                for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
+                    if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
+                            .getTelemetryNodeSubscriptionSensor() || input.getTelemetryNode().get(i)
+                            .getTelemetryNodeSubscription().get(j).getTelemetryNodeSubscriptionSensor()
+                            .isEmpty()) {
+                        builder.setConfigureResult(getConfigResult(false, "There is no sensor id provided in node:" +
+                                input.getTelemetryNode().get(i).getNodeId() + ", Subscription:" + input.getTelemetryNode().get(i)
+                                .getTelemetryNodeSubscription().get(j).getSubscriptionName()));
+                        return RpcResultBuilder.success(builder.build()).buildFuture();
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
+                dataProcessor.deleteNodeSubscriptionSensorFromDataStore(input.getTelemetryNode().get(i).getNodeId(),
+                        input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j).getSubscriptionName(),
+                        input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
+                                .getTelemetryNodeSubscriptionSensor());
+            }
+        }
+        builder.setConfigureResult(getConfigResult(true, ""));
+        return RpcResultBuilder.success(builder.build()).buildFuture();
+    }
+
+    @Override
+    public Future<RpcResult<DeleteNodeTelemetrySubscriptionDestinationOutput>> deleteNodeTelemetrySubscriptionDestination(DeleteNodeTelemetrySubscriptionDestinationInput input) {
+        DeleteNodeTelemetrySubscriptionDestinationOutputBuilder builder = new DeleteNodeTelemetrySubscriptionDestinationOutputBuilder();
+        if (null == input) {
+            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
+
+        if (null == input.getTelemetryNode() || input.getTelemetryNode().isEmpty()) {
+            builder.setConfigureResult(getConfigResult(false, "There is no node id provided by input!"));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
+
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
+                    || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
+                builder.setConfigureResult(getConfigResult(false, "There is no subscription provided in node:" +
+                        input.getTelemetryNode().get(i).getNodeId()));
+                return RpcResultBuilder.success(builder.build()).buildFuture();
+            } else {
+                for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
+                    if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
+                            .getTelemetryNodeSubscriptionDestination() || input.getTelemetryNode().get(i)
+                            .getTelemetryNodeSubscription().get(j).getTelemetryNodeSubscriptionDestination()
+                            .isEmpty()) {
+                        builder.setConfigureResult(getConfigResult(false, "There is no destination id provided in node:" +
+                                input.getTelemetryNode().get(i).getNodeId() + ", Subscription:" + input.getTelemetryNode().get(i)
+                                .getTelemetryNodeSubscription().get(j).getSubscriptionName()));
+                        return RpcResultBuilder.success(builder.build()).buildFuture();
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
+                dataProcessor.deleteNodeSubscriptionDestinationFromDataStore(input.getTelemetryNode().get(i).getNodeId(),
+                        input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j).getSubscriptionName(),
+                        input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
+                                .getTelemetryNodeSubscriptionDestination());
+            }
+        }
+
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
