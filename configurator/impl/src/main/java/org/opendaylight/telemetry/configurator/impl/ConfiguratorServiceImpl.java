@@ -33,6 +33,30 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     private static final Logger LOG = LoggerFactory.getLogger(ConfiguratorServiceImpl.class);
 
     private DataProcessor dataProcessor;
+    private static final String INPUT_NULL = "Input is null";
+    private static final String SENSOR_GROUP_NULL = "There is no sensor group provided by input!";
+    private static final String SENSOR_PATHS = " sensor paths not provided by input!";
+    private static final String SENSOR_GROUP_EXIST = "There are sensor groups Exist!";
+    private static final String NO_SENSOR_GROUP = "No sensor group configured!";
+    private static final String SENSOR_GROUP_ID_NULL = "There is no sensor group id provided by input!";
+
+    private static final String DES_GROUP_NULL = "There is no destination group provided by input!";
+    private static final String DES_FILE = " destination profile not provided by input!";
+    private static final String DES_GROUP_EXIST = "There are destination groups Exist!";
+    private static final String NO_DES_GROUP = "No destination group configured!";
+    private static final String DES_GROUP_ID_NULL = "There is no destination group id provided by input!";
+    private static final String NO_SUBSCR = "No node subscription configured!";
+
+    private static final String NODE_NULL = "There is no node id provided by input!";
+    private static final String SUBSCR_NULL = " no subscription provided by input!";
+    private static final String NODE_SUBSCR_NULL = "Exist node not provide subscription!";
+    private static final String NODE_SUBSCR_SENSOR_NULL = "There is no sensor provided in node subscription!";
+    private static final String NODE_SUBSCR_DES_NULL = "There is no destination provided in node subscription!";
+    private static final String SUBSCR_PARAS_NULL = "Exist Params is null!";
+    private static final String SUBSCR_SENSOR_ABNORMAL = "Sensor empty in node subscription or exist Params in" +
+            " sensor is null or exist sensor not configured!";
+    private static final String SUBSCR_DES_ABNORMAL = "Destination empty in node subscription" +
+            " or exist destination not configured!";
 
     public ConfiguratorServiceImpl(DataProcessor dataProcessor) {
         this.dataProcessor = dataProcessor;
@@ -43,42 +67,26 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         //check input
         AddTelemetrySensorOutputBuilder builder = new AddTelemetrySensorOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
         List<TelemetrySensorGroup> sensorGroupList = input.getTelemetrySensorGroup();
         if (null == sensorGroupList || sensorGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no Sensor group provided by input!"));
+            builder.setConfigureResult(getConfigResult(false, SENSOR_GROUP_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         for (TelemetrySensorGroup sensorGroup : sensorGroupList) {
             if (null == sensorGroup.getTelemetrySensorPaths() || sensorGroup.getTelemetrySensorPaths().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "The sensor paths of " + sensorGroup.getTelemetrySensorGroupId() + " is null or empty!"));
+                builder.setConfigureResult(getConfigResult(false, sensorGroup.getTelemetrySensorGroupId() + SENSOR_PATHS));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
             }
         }
 
-
-        LOG.info("Get sensor group in data store");
-        List<TelemetrySensorGroup> allSensorGroupList = dataProcessor.getSensorGroupFromDataStore(IidConstants.TELEMETRY_IID);
-
         LOG.info("Check sensor group whether exist");
-        for (TelemetrySensorGroup sensorGroup : sensorGroupList) {
-            boolean existFlag = false;
-            if (null != allSensorGroupList) {
-                for (TelemetrySensorGroup allSensorGroup : allSensorGroupList) {
-                    if (sensorGroup.getTelemetrySensorGroupId()
-                            .equals(allSensorGroup.getTelemetrySensorGroupId())) {
-                        existFlag = true;
-                        break;
-                    }
-                }
-            }
-            if (existFlag) {
-                builder.setConfigureResult(getConfigResult(false, "Sensor group " + sensorGroup.getTelemetrySensorGroupId() + " is exist!"));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
+        if (checkSensorGroupExistedInDataStore(sensorGroupList)) {
+            builder.setConfigureResult(getConfigResult(false, SENSOR_GROUP_EXIST));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         LOG.info("Write add telemetry sensor config to dataStore");
@@ -90,12 +98,12 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     @Override
     public Future<RpcResult<QueryTelemetrySensorOutput>> queryTelemetrySensor(QueryTelemetrySensorInput input) {
         if (null == input) {
-            return rpcErr("Input is null!");
+            return rpcErr(INPUT_NULL);
         }
 
         List<TelemetrySensorGroup> allSensorGroupList = dataProcessor.getSensorGroupFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allSensorGroupList || allSensorGroupList.isEmpty()) {
-            return rpcErr("No sensor group configured");
+            return rpcErr(NO_SENSOR_GROUP);
         }
         QueryTelemetrySensorOutputBuilder builder = new QueryTelemetrySensorOutputBuilder();
         builder.setTelemetrySensorGroup(allSensorGroupList);
@@ -107,21 +115,18 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         //check input
         DeleteTelemetrySensorOutputBuilder builder = new DeleteTelemetrySensorOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
-        if (null == input.getTelemetrySensor() || input.getTelemetrySensor().isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no sensor group id provided by input!"));
-            return RpcResultBuilder.success(builder.build()).buildFuture();
-        }
-
-        List<TelemetrySensorGroup> allSensorGroupList = dataProcessor.getSensorGroupFromDataStore(IidConstants.TELEMETRY_IID);
-        if (null == allSensorGroupList || allSensorGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "No sensor group configured!"));
+        if (null == input.getTelemetrySensorGroup() || input.getTelemetrySensorGroup().isEmpty()) {
+            builder.setConfigureResult(getConfigResult(false, SENSOR_GROUP_ID_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        dataProcessor.deleteSensorGroupFromDataStore(input.getTelemetrySensor(), allSensorGroupList);
+        for (int i = 0; i < input.getTelemetrySensorGroup().size(); i++) {
+            dataProcessor.deleteSensorGroupFromDataStore(input.getTelemetrySensorGroup().get(i).getSensorGroupId());
+        }
+
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
@@ -131,40 +136,25 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         //check input
         AddTelemetryDestinationOutputBuilder builder = new AddTelemetryDestinationOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
         List<TelemetryDestinationGroup> destinationGroupList = input.getTelemetryDestinationGroup();
         if (null == destinationGroupList || destinationGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no destination group provided by input!"));
+            builder.setConfigureResult(getConfigResult(false, DES_GROUP_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
         for (TelemetryDestinationGroup destinationGroup : destinationGroupList) {
             if (null == destinationGroup.getDestinationProfile() || destinationGroup.getDestinationProfile().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "The destination profile of " + destinationGroup.getDestinationGroupId() + " is null or empty!"));
+                builder.setConfigureResult(getConfigResult(false, destinationGroup.getDestinationGroupId() + DES_FILE));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
             }
         }
 
-        LOG.info("Get destination group in data store");
-        List<TelemetryDestinationGroup> allDestinationGroupList = dataProcessor.getDestinationGroupFromDataStore(IidConstants.TELEMETRY_IID);
-
         LOG.info("Check destination group whether exist");
-        for (TelemetryDestinationGroup destinationGroup : destinationGroupList) {
-            boolean existFlag = false;
-            if (null != allDestinationGroupList) {
-                for (TelemetryDestinationGroup allDestinationGroup : allDestinationGroupList) {
-                    if (destinationGroup.getDestinationGroupId()
-                            .equals(allDestinationGroup.getDestinationGroupId())) {
-                        existFlag = true;
-                        break;
-                    }
-                }
-            }
-            if (existFlag) {
-                builder.setConfigureResult(getConfigResult(false, "Destination group " + destinationGroup.getDestinationGroupId() + " is exist!"));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            }
+        if (checkDesGroupExistedInDataStore(destinationGroupList)) {
+            builder.setConfigureResult(getConfigResult(false, DES_GROUP_EXIST));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         LOG.info("Write add telemetry sensor config to dataStore");
@@ -177,12 +167,12 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     public Future<RpcResult<QueryTelemetryDestinationOutput>> queryTelemetryDestination(QueryTelemetryDestinationInput input) {
         //check input
         if (null == input) {
-            return rpcErr("Input is null!");
+            return rpcErr(INPUT_NULL);
         }
 
         List<TelemetryDestinationGroup> allDestinationGroupList = dataProcessor.getDestinationGroupFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allDestinationGroupList || allDestinationGroupList.isEmpty()) {
-            return rpcErr("No destination group configured");
+            return rpcErr(NO_DES_GROUP);
         }
         QueryTelemetryDestinationOutputBuilder builder = new QueryTelemetryDestinationOutputBuilder();
         builder.setTelemetryDestinationGroup(allDestinationGroupList);
@@ -194,21 +184,18 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         //check input
         DeleteTelemetryDestinationOutputBuilder builder = new DeleteTelemetryDestinationOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
-        if (null == input.getTelemetryDestination() || input.getTelemetryDestination().isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no destination group id provided by input!"));
-            return RpcResultBuilder.success(builder.build()).buildFuture();
-        }
-
-        List<TelemetryDestinationGroup> allDestinationGroupList = dataProcessor.getDestinationGroupFromDataStore(IidConstants.TELEMETRY_IID);
-        if (null == allDestinationGroupList || allDestinationGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "No destination group configured!"));
+        if (null == input.getTelemetryDestinationGroup() || input.getTelemetryDestinationGroup().isEmpty()) {
+            builder.setConfigureResult(getConfigResult(false, DES_GROUP_ID_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        dataProcessor.deleteDestinationGroupFromDataStore(input.getTelemetryDestination(), allDestinationGroupList);
+        for (int i = 0; i < input.getTelemetryDestinationGroup().size(); i++) {
+            dataProcessor.deleteDestinationGroupFromDataStore(input.getTelemetryDestinationGroup().get(i).getDestinationGroupId());
+        }
+
         builder.setConfigureResult(getConfigResult(true, ""));
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
@@ -218,60 +205,39 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         //check input
         ConfigureNodeTelemetrySubscriptionOutputBuilder builder = new ConfigureNodeTelemetrySubscriptionOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         List<TelemetryNode> nodeGroupList = input.getTelemetryNode();
         if (null == nodeGroupList || nodeGroupList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no node provided by input!"));
+            builder.setConfigureResult(getConfigResult(false, NODE_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         for (TelemetryNode telemetryNodeGroup : nodeGroupList) {
             if (null == telemetryNodeGroup.getTelemetrySubscription() || telemetryNodeGroup.getTelemetrySubscription().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "The subscription of " + telemetryNodeGroup.getNodeId() + " is null or empty!"));
+                builder.setConfigureResult(getConfigResult(false, telemetryNodeGroup.getNodeId() + SUBSCR_NULL));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
             }
 
             for (TelemetrySubscription subscription : telemetryNodeGroup.getTelemetrySubscription()) {
                 if (!checkParamsInSubscriptionExist(subscription)) {
-                    builder.setConfigureResult(getConfigResult(false, "Exit Params in subscription " + subscription.getSubscriptionName() + " of " + telemetryNodeGroup.getNodeId() + " is null!"));
+                    builder.setConfigureResult(getConfigResult(false, subscription.getSubscriptionName() + SUBSCR_PARAS_NULL + telemetryNodeGroup.getNodeId()));
                     return RpcResultBuilder.success(builder.build()).buildFuture();
-                }
-
-                if (null == subscription.getTelemetrySensor() || subscription.getTelemetrySensor().isEmpty()) {
-                    builder.setConfigureResult(getConfigResult(false, "The sensor group of " + telemetryNodeGroup.getNodeId() + " is null or empty!"));
-                    return RpcResultBuilder.success(builder.build()).buildFuture();
-                } else {
-                    for (TelemetrySensor sensor : subscription.getTelemetrySensor()) {
-                        if (!checkSensorExit(sensor.getSensorGroupId())) {
-                            builder.setConfigureResult(getConfigResult(false, "The sensor " + sensor.getSensorGroupId() + " of " + telemetryNodeGroup.getNodeId() + " is not configured in data store!"));
-                            return RpcResultBuilder.success(builder.build()).buildFuture();
-                        }
-                        if (!checkParamsInSensorExist(sensor)) {
-                            builder.setConfigureResult(getConfigResult(false, "Exit Params in sensor " + sensor.getSensorGroupId() + " of " + telemetryNodeGroup.getNodeId() + " is null!"));
-                            return RpcResultBuilder.success(builder.build()).buildFuture();
-                        }
-                    }
-                }
-
-                if (null == subscription.getTelemetryDestination() || subscription.getTelemetryDestination().isEmpty()) {
-                    builder.setConfigureResult(getConfigResult(false, "The destination group of " + telemetryNodeGroup.getNodeId() + " is null or empty!"));
-                    return RpcResultBuilder.success(builder.build()).buildFuture();
-                } else {
-                    for (TelemetryDestination destination : subscription.getTelemetryDestination()) {
-                        if (!checkDestinationExit(destination.getDestinationGroupId())) {
-                            builder.setConfigureResult(getConfigResult(false, "The destination " + destination.getDestinationGroupId() + " of " + telemetryNodeGroup.getNodeId() + " is not configured in data store!"));
-                            return RpcResultBuilder.success(builder.build()).buildFuture();
-                        }
-                    }
                 }
             }
-
-
         }
 
+        if (!checkSubscriSensorProvidedByConfigSubscriInput(nodeGroupList)) {
+            builder.setConfigureResult(getConfigResult(false, SUBSCR_SENSOR_ABNORMAL));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
+
+        if (!checkSubscriDesProvidedByConfigSubscriInput(nodeGroupList)) {
+            builder.setConfigureResult(getConfigResult(false, SUBSCR_DES_ABNORMAL));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
 
         dataProcessor.addNodeSubscriptionToDataStore(input.getTelemetryNode());
         builder.setConfigureResult(getConfigResult(true, ""));
@@ -282,12 +248,12 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     public Future<RpcResult<QueryNodeTelemetrySubscriptionOutput>> queryNodeTelemetrySubscription(QueryNodeTelemetrySubscriptionInput input) {
         //check input
         if (null == input) {
-            return rpcErr("Input is null!");
+            return rpcErr(INPUT_NULL);
         }
 
         List<TelemetryNode> allNodeSubscriptionList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allNodeSubscriptionList || allNodeSubscriptionList.isEmpty()) {
-            return rpcErr("No node subscription configured");
+            return rpcErr(NO_SUBSCR);
         }
         QueryNodeTelemetrySubscriptionOutputBuilder builder = new QueryNodeTelemetrySubscriptionOutputBuilder();
         builder.setTelemetryNode(allNodeSubscriptionList);
@@ -299,27 +265,26 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         //check input
         DeleteNodeTelemetrySubscriptionOutputBuilder builder = new DeleteNodeTelemetrySubscriptionOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         if (null == input.getTelemetryNode() || input.getTelemetryNode().isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no node id provided by input!"));
+            builder.setConfigureResult(getConfigResult(false, NODE_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         for (int i = 0; i < input.getTelemetryNode().size(); i++) {
             if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
                     || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "There is no subscription provided in node:" +
-                        input.getTelemetryNode().get(i).getNodeId()));
+                builder.setConfigureResult(getConfigResult(false, input.getTelemetryNode().get(i).getNodeId() + SUBSCR_NULL));
                 return RpcResultBuilder.success(builder.build()).buildFuture();
             }
         }
 
         List<TelemetryNode> allNodeSubscriptionList = dataProcessor.getNodeSubscriptionFromDataStore(IidConstants.TELEMETRY_IID);
         if (null == allNodeSubscriptionList || allNodeSubscriptionList.isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "No node subscription configured!"));
+            builder.setConfigureResult(getConfigResult(false, NO_SUBSCR));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
@@ -335,34 +300,23 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     public Future<RpcResult<DeleteNodeTelemetrySubscriptionSensorOutput>> deleteNodeTelemetrySubscriptionSensor(DeleteNodeTelemetrySubscriptionSensorInput input) {
         DeleteNodeTelemetrySubscriptionSensorOutputBuilder builder = new DeleteNodeTelemetrySubscriptionSensorOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         if (null == input.getTelemetryNode() || input.getTelemetryNode().isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no node id provided by input!"));
+            builder.setConfigureResult(getConfigResult(false, NODE_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
-            if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
-                    || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "There is no subscription provided in node:" +
-                        input.getTelemetryNode().get(i).getNodeId()));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            } else {
-                for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
-                    if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
-                            .getTelemetryNodeSubscriptionSensor() || input.getTelemetryNode().get(i)
-                            .getTelemetryNodeSubscription().get(j).getTelemetryNodeSubscriptionSensor()
-                            .isEmpty()) {
-                        builder.setConfigureResult(getConfigResult(false, "There is no sensor id provided in node:" +
-                                input.getTelemetryNode().get(i).getNodeId() + ", Subscription:" + input.getTelemetryNode().get(i)
-                                .getTelemetryNodeSubscription().get(j).getSubscriptionName()));
-                        return RpcResultBuilder.success(builder.build()).buildFuture();
-                    }
-                }
-            }
+        if (!checkSubscriProvidedByDelSensorInput(input)) {
+            builder.setConfigureResult(getConfigResult(false, NODE_SUBSCR_NULL));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
+
+        if (!checkSubscriSensorProvidedByDelSensorInput(input)) {
+            builder.setConfigureResult(getConfigResult(false, NODE_SUBSCR_SENSOR_NULL));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         for (int i = 0; i < input.getTelemetryNode().size(); i++) {
@@ -381,34 +335,23 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     public Future<RpcResult<DeleteNodeTelemetrySubscriptionDestinationOutput>> deleteNodeTelemetrySubscriptionDestination(DeleteNodeTelemetrySubscriptionDestinationInput input) {
         DeleteNodeTelemetrySubscriptionDestinationOutputBuilder builder = new DeleteNodeTelemetrySubscriptionDestinationOutputBuilder();
         if (null == input) {
-            builder.setConfigureResult(getConfigResult(false, "Input is null!"));
+            builder.setConfigureResult(getConfigResult(false, INPUT_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         if (null == input.getTelemetryNode() || input.getTelemetryNode().isEmpty()) {
-            builder.setConfigureResult(getConfigResult(false, "There is no node id provided by input!"));
+            builder.setConfigureResult(getConfigResult(false, NODE_NULL));
             return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
-        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
-            if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
-                    || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
-                builder.setConfigureResult(getConfigResult(false, "There is no subscription provided in node:" +
-                        input.getTelemetryNode().get(i).getNodeId()));
-                return RpcResultBuilder.success(builder.build()).buildFuture();
-            } else {
-                for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
-                    if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
-                            .getTelemetryNodeSubscriptionDestination() || input.getTelemetryNode().get(i)
-                            .getTelemetryNodeSubscription().get(j).getTelemetryNodeSubscriptionDestination()
-                            .isEmpty()) {
-                        builder.setConfigureResult(getConfigResult(false, "There is no destination id provided in node:" +
-                                input.getTelemetryNode().get(i).getNodeId() + ", Subscription:" + input.getTelemetryNode().get(i)
-                                .getTelemetryNodeSubscription().get(j).getSubscriptionName()));
-                        return RpcResultBuilder.success(builder.build()).buildFuture();
-                    }
-                }
-            }
+        if (!checkSubscriProvidedByDelDesInput(input)) {
+            builder.setConfigureResult(getConfigResult(false, NODE_SUBSCR_NULL));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
+        }
+
+        if (!checkSubscriDesProvidedByDelDesInput(input)) {
+            builder.setConfigureResult(getConfigResult(false, NODE_SUBSCR_DES_NULL));
+            return RpcResultBuilder.success(builder.build()).buildFuture();
         }
 
         for (int i = 0; i < input.getTelemetryNode().size(); i++) {
@@ -424,6 +367,75 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 
+    private boolean checkSensorGroupExistedInDataStore(List<TelemetrySensorGroup> sensorGroupList) {
+        LOG.info("Get sensor group from data store");
+        List<TelemetrySensorGroup> allSensorGroupList = dataProcessor.getSensorGroupFromDataStore(IidConstants.TELEMETRY_IID);
+
+        if (null == allSensorGroupList || allSensorGroupList.isEmpty()) {
+            return false;
+        }
+
+        for (TelemetrySensorGroup sensorGroup : sensorGroupList) {
+            for (TelemetrySensorGroup allSensorGroup : allSensorGroupList) {
+                if (sensorGroup.getTelemetrySensorGroupId().equals(allSensorGroup.getTelemetrySensorGroupId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkDesGroupExistedInDataStore(List<TelemetryDestinationGroup> destinationGroupList) {
+        LOG.info("Get destination group from data store");
+        List<TelemetryDestinationGroup> allDestinationGroupList = dataProcessor.getDestinationGroupFromDataStore(IidConstants.TELEMETRY_IID);
+
+        if (null == allDestinationGroupList || allDestinationGroupList.isEmpty()) {
+            return false;
+        }
+
+        for (TelemetryDestinationGroup destinationGroup : destinationGroupList) {
+            for (TelemetryDestinationGroup allDestinationGroup : allDestinationGroupList) {
+                if (destinationGroup.getDestinationGroupId().equals(allDestinationGroup.getDestinationGroupId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkSubscriSensorProvidedByConfigSubscriInput(List<TelemetryNode> nodeGroupList) {
+        for (TelemetryNode telemetryNodeGroup : nodeGroupList) {
+            for (TelemetrySubscription subscription : telemetryNodeGroup.getTelemetrySubscription()) {
+                if (null == subscription.getTelemetrySensor() || subscription.getTelemetrySensor().isEmpty()) {
+                    return false;
+                }
+
+                for (TelemetrySensor sensor : subscription.getTelemetrySensor()) {
+                    if (!(checkSensorExit(sensor.getSensorGroupId()) || checkParamsInSensorExist(sensor))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean checkSubscriDesProvidedByConfigSubscriInput(List<TelemetryNode> nodeGroupList) {
+        for (TelemetryNode telemetryNodeGroup : nodeGroupList) {
+            for (TelemetrySubscription subscription : telemetryNodeGroup.getTelemetrySubscription()) {
+                if (null == subscription.getTelemetryDestination() || subscription.getTelemetryDestination().isEmpty()) {
+                    return false;
+                }
+
+                for (TelemetryDestination destination : subscription.getTelemetryDestination()) {
+                    if (!checkDestinationExit(destination.getDestinationGroupId())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     private ConfigureResult getConfigResult(boolean result, String errorCause) {
         ConfigureResultBuilder cfgResultBuilder  = new ConfigureResultBuilder();
@@ -478,6 +490,54 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
             }
         }
         return false;
+    }
+
+    private boolean checkSubscriProvidedByDelSensorInput(DeleteNodeTelemetrySubscriptionSensorInput input) {
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
+                    || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkSubscriSensorProvidedByDelSensorInput(DeleteNodeTelemetrySubscriptionSensorInput input) {
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
+                if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
+                        .getTelemetryNodeSubscriptionSensor() || input.getTelemetryNode().get(i)
+                        .getTelemetryNodeSubscription().get(j).getTelemetryNodeSubscriptionSensor()
+                        .isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean checkSubscriProvidedByDelDesInput(DeleteNodeTelemetrySubscriptionDestinationInput input) {
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription()
+                    || input.getTelemetryNode().get(i).getTelemetryNodeSubscription().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkSubscriDesProvidedByDelDesInput(DeleteNodeTelemetrySubscriptionDestinationInput input) {
+        for (int i = 0; i < input.getTelemetryNode().size(); i++) {
+            for (int j = 0; j < input.getTelemetryNode().get(i).getTelemetryNodeSubscription().size(); j++) {
+                if (null == input.getTelemetryNode().get(i).getTelemetryNodeSubscription().get(j)
+                        .getTelemetryNodeSubscriptionDestination() || input.getTelemetryNode().get(i)
+                        .getTelemetryNodeSubscription().get(j).getTelemetryNodeSubscriptionDestination()
+                        .isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

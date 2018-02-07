@@ -49,7 +49,7 @@ module telemetry-configurator-api {
 
     rpc delete-telemetry-sensor {
         input {
-           list telemetry-sensor {
+           list telemetry-sensor-group {
               key "sensor-group-id";
               uses oc-telemetry:telemetry-sensor-group-config;
            }
@@ -85,7 +85,7 @@ module telemetry-configurator-api {
 
     rpc delete-telemetry-destination {
         input {
-           list telemetry-destination {
+           list telemetry-destination-group {
               key "destination-group-id";
               uses telemetry-cfg:telemetry-destination-group;
            }
