@@ -168,7 +168,7 @@ input: {
              telemetry-node:[{
                                 node-id:node1,
                                 telemetry-node-subscription:[{
-                                      subscription-name:subscription1.
+                                      subscription-name:subscription1,
                                       telemetry-node-subscription-sensor:[{
                                           sensor-group-id:sensor1
                                       },
