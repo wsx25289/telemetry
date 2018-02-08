@@ -52,7 +52,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
     private static final String NODE_SUBSCR_NULL = "Exist node not provide subscription!";
     private static final String NODE_SUBSCR_SENSOR_NULL = "There is no sensor provided in node subscription!";
     private static final String NODE_SUBSCR_DES_NULL = "There is no destination provided in node subscription!";
-    private static final String SUBSCR_PARAS_NULL = "Exist Params is null!";
+    private static final String SUBSCR_PARAS_NULL = " exist Params is null! ";
     private static final String SUBSCR_SENSOR_ABNORMAL = "Sensor empty in node subscription or exist Params in" +
             " sensor is null or exist sensor not configured!";
     private static final String SUBSCR_DES_ABNORMAL = "Destination empty in node subscription" +
