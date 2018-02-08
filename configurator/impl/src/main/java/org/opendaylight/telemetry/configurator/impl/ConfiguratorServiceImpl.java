@@ -411,7 +411,7 @@ public class ConfiguratorServiceImpl implements TelemetryConfiguratorApiService 
                 }
 
                 for (TelemetrySensor sensor : subscription.getTelemetrySensor()) {
-                    if (!(checkSensorExit(sensor.getSensorGroupId()) || checkParamsInSensorExist(sensor))) {
+                    if (!(checkSensorExit(sensor.getSensorGroupId()) && checkParamsInSensorExist(sensor))) {
                         return false;
                     }
                 }
